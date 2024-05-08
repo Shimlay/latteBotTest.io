@@ -12,7 +12,8 @@
         <h1>Биржа услуг</h1>
         <img src="latte.png" alt="">
         <p>Выберите мастера</p>
-        <button id="masters">Выбрать мастера</button>
+        <button id="customersBtn">Заказчикам</button>
+        <button id="mastersBtn" style="display: none;">Мастерам</button>
     </div>
     <div id="categoriesList" style="display: none;">
         <p>Список категорий:</p>
@@ -31,13 +32,16 @@
         <button id="order">Оформить</button>
     </form>
     <script>
-        let mastersBtn = document.getElementById("masters");
+        let customersBtn = document.getElementById("customersBtn");
+        let mastersBtn = document.getElementById("mastersBtn");
         let order = document.getElementById("order");
         let categoriesList = document.getElementById("categoriesList");
         let categoryList = document.getElementById("categoryList");
 
-        mastersBtn.addEventListener("click", () => {
+        customersBtn.addEventListener("click", () => {
             categoriesList.style.display = "block";
+            customersBtn.style.display = "none";
+            mastersBtn.style.display = "inline-block";
         });
 
         order.addEventListener("click", () => {
