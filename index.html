@@ -24,35 +24,33 @@
             <li>Категория 5</li>
         </ul>
     </div>
-    <form id="form">
+    <form id="form" style="display: none;">
         <input type="text" placeholder="Имя" id="user_name">
         <input type="text" placeholder="Мыло" id="user_email">
         <input type="text" placeholder="Телефон" id="user_phone">
         <button id="order">Оформить</button>
     </form>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        let tg = window.Telegram.WebApp;
         let mastersBtn = document.getElementById("masters");
         let order = document.getElementById("order");
         let categoriesList = document.getElementById("categoriesList");
         let categoryList = document.getElementById("categoryList");
 
-        tg.expand();
-
         mastersBtn.addEventListener("click", () => {
-            document.getElementById("main").style.display = "none";
             categoriesList.style.display = "block";
         });
 
         order.addEventListener("click", () => {
-            tg.close();
+            // Здесь можно добавить обработчик для отправки данных заказа
+            alert("Заказ оформлен!");
+            // После отправки заказа можно перенаправить пользователя на другую страницу или выполнить другие действия
         });
 
         categoryList.addEventListener("click", (event) => {
             const selectedCategory = event.target.textContent.trim();
             console.log("Выбрана категория:", selectedCategory);
-            // Здесь можно добавить дополнительный функционал для выбранной категории
+            // Здесь можно добавить дополнительный функционал для выбранной категории, например, отображение формы заказа
+            document.getElementById("form").style.display = "block";
         });
     </script>
 </body>
