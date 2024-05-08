@@ -6,46 +6,23 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Latte</title>
-    <style>
-        body {
-            background-image: url('latte.png');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        #main {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        #form {
-            display: none;
-        }
-        #categories {
-            display: none;
-        }
-    </style>
 </head>
 <body>
     <div id="main">
         <h1>Биржа услуг</h1>
-        <button id="masters">Мастерам</button>
-        <button id="customers">Заказчикам</button>
-        <div id="categories">
-            <p>Список категорий услуг:</p>
-            <ul>
-                <li>Категория 1</li>
-                <li>Категория 2</li>
-                <li>Категория 3</li>
-                <!-- Добавьте другие категории по мере необходимости -->
-            </ul>
-        </div>
+        <img src="latte.png" alt="">
+        <p>Выберите мастера</p>
+        <button id="masters">Выбрать мастера</button>
+    </div>
+    <div id="categoriesList" style="display: none;">
+        <p>Список категорий:</p>
+        <ul id="categoryList">
+            <li>Категория 1</li>
+            <li>Категория 2</li>
+            <li>Категория 3</li>
+            <li>Категория 4</li>
+            <li>Категория 5</li>
+        </ul>
     </div>
     <form id="form">
         <input type="text" placeholder="Имя" id="user_name">
@@ -55,37 +32,28 @@
     </form>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Переменные для элементов страницы
         let tg = window.Telegram.WebApp;
-        let mainDiv = document.getElementById("main");
-        let form = document.getElementById("form");
-        let categoriesDiv = document.getElementById("categories");
-        let userNameInput = document.getElementById("user_name");
+        let mastersBtn = document.getElementById("masters");
+        let order = document.getElementById("order");
+        let categoriesList = document.getElementById("categoriesList");
+        let categoryList = document.getElementById("categoryList");
 
-        // Функция для отображения различных элементов в зависимости от нажатой кнопки
-        function displayElements(mainVisible, formVisible, categoriesVisible) {
-            mainDiv.style.display = mainVisible ? "block" : "none";
-            form.style.display = formVisible ? "block" : "none";
-            categoriesDiv.style.display = categoriesVisible ? "block" : "none";
-        }
+        tg.expand();
 
-        // Реакция на нажатие кнопки "Мастерам"
-        document.getElementById("masters").addEventListener("click", () => {
-            displayElements(true, false, false);
+        mastersBtn.addEventListener("click", () => {
+            document.getElementById("main").style.display = "none";
+            categoriesList.style.display = "block";
         });
 
-        // Реакция на нажатие кнопки "Заказчикам"
-        document.getElementById("customers").addEventListener("click", () => {
-            displayElements(false, false, true);
-        });
-
-        // Реакция на нажатие кнопки "Оформить"
-        document.getElementById("order").addEventListener("click", () => {
+        order.addEventListener("click", () => {
             tg.close();
         });
 
-        // Установка значения в поле "Имя"
-        userNameInput.value = tg.initDataUnsafe.user.first_name;
+        categoryList.addEventListener("click", (event) => {
+            const selectedCategory = event.target.textContent.trim();
+            console.log("Выбрана категория:", selectedCategory);
+            // Здесь можно добавить дополнительный функционал для выбранной категории
+        });
     </script>
 </body>
 </html>
