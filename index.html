@@ -75,10 +75,12 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
-        tg.BackButton.show(); // Показать кнопку "назад"
+        tg.BackButton.show();
 
+        // Обработчик нажатия кнопки "назад"
         tg.BackButton.onClick(() => {
-            document.getElementById('info').innerText = 'Back button clicked!';
+            document.getElementById('main').style.display = 'block';
+            document.getElementById('form').style.display = 'none';
         });
         let masters = document.getElementById("masters");
         let customers = document.getElementById("customers");
