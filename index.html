@@ -1,4 +1,90 @@
-<script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Latte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f7f7f7;
+        }
+        #main {
+            text-align: center;
+            padding: 20px;
+        }
+        #main h1 {
+            font-size: 28px;
+            color: #333;
+        }
+        #main img {
+            width: 150px;
+        }
+        #form {
+            display: none;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #categories ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #categories ul li {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 0 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <h1>Биржа услуг</h1>
+        <img src="latte.png" alt="Latte Logo">
+        <p>Добро пожаловать</p>
+        <button id="masters">Выбрать мастера</button>
+        <button id="customers">Мой профиль</button>
+    </div>
+    <div id="form">
+        <form id="customerForm">
+            <label for="fio">ФИО:</label>
+            <input type="text" id="fio" name="fio" required>
+
+            <label for="profession">Профессия:</label>
+            <select id="profession" name="profession" required>
+                <option value="engineer">Инженер</option>
+                <option value="teacher">Учитель</option>
+                <option value="doctor">Врач</option>
+            </select>
+
+            <label for="about">Расскажите о себе:</label>
+            <textarea id="about" name="about" rows="4" required></textarea>
+
+            <label for="photo">Прикрепите фото:</label>
+            <input type="file" id="photo" name="photo" accept="image/*">
+
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
         let tg = window.Telegram.WebApp;
         tg.BackButton.show();
 
@@ -24,16 +110,19 @@
             const about = document.getElementById("about").value;
             const photo = document.getElementById("photo").files[0];
 
-            
+            // Assuming you upload the photo and get a URL
+            const photo_url = 'http://localhost:8000/saveCustomerData/' + photo.name;
 
             const data = {
                 fio: fio,
                 profession: profession,
                 about: about,
-                photo_url: photo
+                photo_url: photo_url
             };
 
             tg.sendData(JSON.stringify(data)); // Отправка данных боту
             tg.close(); // Закрыть Web App
         });
     </script>
+</body>
+</html>
