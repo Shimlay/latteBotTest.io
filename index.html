@@ -115,6 +115,19 @@
             formData.append('profession', profession);
             formData.append('about', about);
             formData.append('photo', photo);
+             fetch('http://localhost:8000/saveCustomerData', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Данные успешно отправлены!');
+                tg.close();
+            })
+            .catch(error => {
+                alert('Ошибка при отправке данных.');
+                console.error('Error:', error);
+            });
     </script>
 </body>
 </html>
