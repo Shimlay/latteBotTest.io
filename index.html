@@ -88,7 +88,6 @@
         let tg = window.Telegram.WebApp;
         tg.BackButton.show();
 
-        // Обработчик нажатия кнопки "назад"
         tg.BackButton.onClick(() => {
             document.getElementById('main').style.display = 'block';
             document.getElementById('form').style.display = 'none';
@@ -114,11 +113,13 @@
             formData.append('profession', profession);
             formData.append('about', about);
             formData.append('photo', photo);
-             fetch('https://shimlay.github.io/latteBotTest.io/saveCustomerData', {
+            formData.append('user_id', tg.initDataUnsafe.user.id);
+
+            fetch('https://shimlay.github.io/latteBotTest.io/saveCustomerData', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => response.text())
             .then(data => {
                 alert('Данные успешно отправлены!');
                 tg.close();
