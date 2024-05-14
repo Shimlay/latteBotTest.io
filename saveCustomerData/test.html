@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Latte</title>
+    <style>
+        body {
+            background-image: url('../latte.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #main {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #form {
+            display: none;
+        }
+        #categories {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <h1>Биржа услуг</h1>
+        <button id="masters">Мастерам</button>
+        <button id="customers">Заказчикам</button>
+        <div id="categories">
+            <p>Список категорий услуг:</p>
+            <ul>
+                <li>Категория 1</li>
+                <li>Категория 2</li>
+                <li>Категория 3</li>
+                <!-- Добавьте другие категории по мере необходимости -->
+            </ul>
+        </div>
+    </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Переменные для элементов страницы
+        let tg = window.Telegram.WebApp;
+        let mainDiv = document.getElementById("main");
+        let form = document.getElementById("form");
+        let categoriesDiv = document.getElementById("categories");
+        let userNameInput = document.getElementById("user_name");
+
+        // Функция для отображения различных элементов в зависимости от нажатой кнопки
+        function displayElements(mainVisible, formVisible, categoriesVisible) {
+            mainDiv.style.display = mainVisible ? "block" : "none";
+            categoriesDiv.style.display = categoriesVisible ? "block" : "none";
+        }
+
+        // Реакция на нажатие кнопки "Мастерам"
+        document.getElementById("masters").addEventListener("click", () => {
+            displayElements(true, false);
+        });
+
+        // Реакция на нажатие кнопки "Заказчикам"
+        document.getElementById("customers").addEventListener("click", () => {
+            displayElements(false, true);
+        });
+
+        // Реакция на нажатие кнопки "Оформить"
+        document.getElementById("order").addEventListener("click", () => {
+            tg.close();
+        });
+
+        // Установка значения в поле "Имя"
+        userNameInput.value = tg.initDataUnsafe.user.first_name;
+    </script>
+</body>
+</html>
+
+
+
+
+<form id="form">
+        <div id="categories">
+            <p>Список категорий услуг:</p>
+            <ul>
+                <li>Недвижимость</li>
+                <li>Уборка</li>
+                <li>Коучинг</li>
+            </ul>
+        </div>
+    </form>
