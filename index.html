@@ -7,50 +7,84 @@
     <title>Latte</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background-color: #f7f7f7;
+            background-color: #f0f2f5;
+            color: #333;
         }
         #main {
             text-align: center;
-            padding: 20px;
+            padding: 50px 20px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         #main h1 {
-            font-size: 28px;
-            color: #333;
-        }
-        #main img {
-            width: 150px;
-        }
-        #form {
-            display: none;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        #categories ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        #categories ul li {
-            font-size: 18px;
+            font-size: 36px;
             margin-bottom: 10px;
         }
-        button {
+        #main img {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+        #main p {
+            font-size: 18px;
+            color: #777;
+        }
+        #main button {
             background-color: #007bff;
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             font-size: 16px;
             cursor: pointer;
-            border-radius: 5px;
-            margin: 0 10px;
+            border-radius: 25px;
+            margin: 20px 10px;
+            transition: background-color 0.3s;
         }
-        button:hover {
+        #main button:hover {
             background-color: #0056b3;
+        }
+        #form {
+            display: none;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        #form label {
+            display: block;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        #form input, #form select, #form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        #form textarea {
+            resize: vertical;
+        }
+        #form button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 25px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        #form button:hover {
+            background-color: #218838;
         }
     </style>
 </head>
@@ -86,9 +120,12 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
+
+        // Показываем кнопку "Назад" в Web App
         tg.BackButton.show();
 
         tg.BackButton.onClick(() => {
+            // Показать главный экран и скрыть форму при нажатии кнопки "Назад"
             document.getElementById('main').style.display = 'block';
             document.getElementById('form').style.display = 'none';
         });
@@ -97,31 +134,63 @@
         let customers = document.getElementById("customers");
 
         customers.addEventListener("click", () => {
+            // Скрыть главный экран и показать форму профиля при нажатии кнопки "Мой профиль"
             document.getElementById("main").style.display = "none";
             document.getElementById("form").style.display = "block";
         });
 
         let customerForm = document.getElementById("customerForm");
 
-        customerForm.addEventListener("submit", (e) => {
+        customerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
+
             const fio = document.getElementById("fio").value;
             const profession = document.getElementById("profession").value;
             const about = document.getElementById("about").value;
             const photo = document.getElementById("photo").files[0];
 
-            // Assuming you upload the photo and get a URL
-            const photo_url = 'http://localhost:8000/saveCustomerData/' + photo.name;
+            // Отладочная информация
+            console.log("ФИО:", fio);
+            console.log("Профессия:", profession);
+            console.log("О себе:", about);
+            console.log("Фото:", photo);
 
-            const data = {
-                fio: fio,
-                profession: profession,
-                about: about,
-                photo_url: photo_url
-            };
+            // Загрузка фото на сервер
+            const formData = new FormData();
+            formData.append('photo', photo);
 
-            tg.sendData(JSON.stringify(data)); // Отправка данных боту
-            tg.close(); // Закрыть Web App
+            try {
+                const response = await fetch('http://localhost:8000/uploadPhoto', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при загрузке фото');
+                }
+
+                const result = await response.json();
+                const photo_url = result.photo_url;
+
+                const data = {
+                    fio: fio,
+                    profession: profession,
+                    about: about,
+                    photo_url: photo_url
+                };
+
+                // Отладочная информация
+                console.log("Отправляем данные боту:", data);
+
+                // Отправка данных боту
+                tg.sendData(JSON.stringify(data));
+
+                // Закрыть Web App
+                tg.close();
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Ошибка при отправке данных');
+            }
         });
     </script>
 </body>
