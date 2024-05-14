@@ -93,9 +93,8 @@
             document.getElementById('main').style.display = 'block';
             document.getElementById('form').style.display = 'none';
         });
-        let masters = document.getElementById("masters");
+
         let customers = document.getElementById("customers");
-        let categoriesDiv = document.getElementById("categories");
         
         customers.addEventListener("click", () => {
             document.getElementById("main").style.display = "none";
@@ -128,6 +127,7 @@
                 alert('Ошибка при отправке данных.');
                 console.error('Error:', error);
             });
+        });
     </script>
 </body>
 </html>
