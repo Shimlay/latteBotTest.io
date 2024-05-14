@@ -115,7 +115,7 @@
             formData.append('photo', photo);
             formData.append('user_id', tg.initDataUnsafe.user.id);
 
-            fetch('http://localhost:8000/saveCustomerData', {
+            fetch('https://localhost:8000/', {
                 method: 'POST',
                 body: formData
             })
