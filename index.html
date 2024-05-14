@@ -75,9 +75,9 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
-        Telegram.WebApp.BackButton.show(); // Показать кнопку "назад"
+        tg.BackButton.show(); // Показать кнопку "назад"
 
-        Telegram.WebApp.BackButton.onClick(() => {
+        tg.BackButton.onClick(() => {
             document.getElementById('info').innerText = 'Back button clicked!';
         });
         let masters = document.getElementById("masters");
