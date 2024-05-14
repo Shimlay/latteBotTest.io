@@ -58,20 +58,31 @@
     <div id="main">
         <h1>Биржа услуг</h1>
         <img src="latte.png" alt="Latte Logo">
-        <p>Выберите мастера</p>
+        <p>Добро пожаловать</p>
         <button id="masters">Выбрать мастера</button>
-        <button id="customers">Заказчикам</button>
+        <button id="customers">Мой профиль</button>
     </div>
-    <form id="form">
-        <div id="categories">
-            <p>Список категорий услуг:</p>
-            <ul>
-                <li><button id="nedvizimost">Недвижимость</button></li>
-                <li><button id="couch">Коучинг</button></li>
-                <li><button id="cleaning">Клининг</button></li>
-            </ul>
-        </div>
-    </form>
+    <div id="form">
+        <form id="customerForm">
+            <label for="fio">ФИО:</label>
+            <input type="text" id="fio" name="fio" required>
+
+            <label for="profession">Профессия:</label>
+            <select id="profession" name="profession" required>
+                <option value="engineer">Инженер</option>
+                <option value="teacher">Учитель</option>
+                <option value="doctor">Врач</option>
+            </select>
+
+            <label for="about">Расскажите о себе:</label>
+            <textarea id="about" name="about" rows="4" required></textarea>
+
+            <label for="photo">Прикрепите фото:</label>
+            <input type="file" id="photo" name="photo" accept="image/*">
+
+            <button type="submit">Отправить</button>
+        </form>
+    </div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
@@ -85,11 +96,25 @@
         let masters = document.getElementById("masters");
         let customers = document.getElementById("customers");
         let categoriesDiv = document.getElementById("categories");
-
+        
         customers.addEventListener("click", () => {
             document.getElementById("main").style.display = "none";
             document.getElementById("form").style.display = "block";
         });
+        let customerForm = document.getElementById("customerForm");
+
+        customerForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const fio = document.getElementById("fio").value;
+            const profession = document.getElementById("profession").value;
+            const about = document.getElementById("about").value;
+            const photo = document.getElementById("photo").files[0];
+
+            const formData = new FormData();
+            formData.append('fio', fio);
+            formData.append('profession', profession);
+            formData.append('about', about);
+            formData.append('photo', photo);
     </script>
 </body>
 </html>
