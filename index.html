@@ -110,14 +110,13 @@
             const about = document.getElementById("about").value;
             const photo = document.getElementById("photo").files[0];
 
-            // Assuming you upload the photo and get a URL
-            const photo_url = 'http://localhost:8000/saveCustomerData/' + photo.name;
+            
 
             const data = {
                 fio: fio,
                 profession: profession,
                 about: about,
-                photo_url: photo_url
+                photo_url: photo
             };
 
             tg.sendData(JSON.stringify(data)); // Отправка данных боту
