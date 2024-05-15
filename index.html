@@ -121,11 +121,9 @@
     <script>
         let tg = window.Telegram.WebApp;
 
-        // Показываем кнопку "Назад" в Web App
         tg.BackButton.show();
 
         tg.BackButton.onClick(() => {
-            // Показать главный экран и скрыть форму при нажатии кнопки "Назад"
             document.getElementById('main').style.display = 'block';
             document.getElementById('form').style.display = 'none';
         });
@@ -134,7 +132,6 @@
         let customers = document.getElementById("customers");
 
         customers.addEventListener("click", () => {
-            // Скрыть главный экран и показать форму профиля при нажатии кнопки "Мой профиль"
             document.getElementById("main").style.display = "none";
             document.getElementById("form").style.display = "block";
         });
@@ -160,7 +157,7 @@
             formData.append('photo', photo);
 
             try {
-                const response = await fetch('http://localhost:8000/uploadPhoto', {
+                const response = await fetch('https://e126-5-18-250-185.ngrok-free.app/uploads/uploadPhoto', {
                     method: 'POST',
                     body: formData
                 });
