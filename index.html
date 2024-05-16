@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -143,9 +144,9 @@
 
             <label for="profession">Профессия:</label>
             <select id="profession" name="profession" required>
-                <option value="Инженер">Инженер</option>
-                <option value="Учитель">Учитель</option>
-                <option value="Доктор">Врач</option>
+                <option value="engineer">Инженер</option>
+                <option value="teacherь">Учитель</option>
+                <option value="doctorр">Врач</option>
             </select>
 
             <label for="about">Расскажите о себе:</label>
@@ -177,6 +178,7 @@
         <button id="backToMain">Назад</button>
     </div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
 
