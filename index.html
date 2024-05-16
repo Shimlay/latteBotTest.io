@@ -360,5 +360,20 @@
             renderProfiles(filteredUsers);
         }
     </script>
+    <script>
+        // Обработчик события ввода в строку поиска
+        document.getElementById('search').addEventListener('input', () => {
+            const searchValue = document.getElementById('search').value;
+            const filteredUsers = filterByProfession(searchValue);
+            renderProfiles(filteredUsers);
+        });
+
+        // Функция фильтрации пользователей по профессии
+        function filterByProfession(profession) {
+            const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Здесь должны быть все данные пользователей
+            if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
+            return allUserData.filter(user => user.profession.toLowerCase().includes(profession.toLowerCase()));
+        }
+    </script>
 </body>
 </html>
