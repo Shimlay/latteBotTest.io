@@ -47,7 +47,7 @@
         #main button:hover {
             background-color: #0056b3;
         }
-        #form, #profile {
+        #form, #profile, #masterList {
             display: none;
             padding: 40px 20px;
             background-color: #ffffff;
@@ -90,6 +90,42 @@
             max-width: 100%;
             margin-top: 20px;
         }
+        #masterList {
+            display: none;
+            padding: 40px 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 50px auto;
+            max-width: 600px;
+        }
+        .filter-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .filter-buttons button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 25px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        .filter-buttons button:hover {
+            background-color: #0056b3;
+        }
+        .user-profile {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 0;
+        }
+        .user-profile img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -131,6 +167,18 @@
         <button id="editButton">Редактировать</button>
         <button id="backButton">Назад</button>
     </div>
+    <div id="masterList">
+        <div class="filter-buttons">
+            <button data-filter="all">Все</button>
+            <button data-filter="engineer">Инженер</button>
+            <button data-filter="teacher">Учитель</button>
+            <button data-filter="doctor">Врач</button>
+        </div>
+        <div id="masterProfiles">
+            <!-- Здесь будут отображаться профили пользователей -->
+        </div>
+        <button id="backToMain">Назад</button>
+    </div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
@@ -141,6 +189,7 @@
             document.getElementById('main').style.display = 'block';
             document.getElementById('form').style.display = 'none';
             document.getElementById('profile').style.display = 'none';
+            document.getElementById('masterList').style.display = 'none';
         });
 
         let masters = document.getElementById("masters");
@@ -205,12 +254,7 @@
         });
 
         masters.addEventListener("click", () => {
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            if (userData) {
-                showProfile(userData);
-            } else {
-                alert('Нет сохраненных данных пользователя.');
-            }
+            showMasterList();
         });
 
         document.getElementById('editButton').addEventListener('click', () => {
@@ -220,6 +264,18 @@
         document.getElementById('backButton').addEventListener('click', () => {
             document.getElementById('main').style.display = 'block';
             document.getElementById('profile').style.display = 'none';
+        });
+
+        document.getElementById('backToMain').addEventListener('click', () => {
+            document.getElementById('main').style.display = 'block';
+            document.getElementById('masterList').style.display = 'none';
+        });
+
+        document.querySelectorAll('.filter-buttons button').forEach(button => {
+            button.addEventListener('click', () => {
+                const filter = button.getAttribute('data-filter');
+                filterProfiles(filter);
+            });
         });
 
         function showForm() {
@@ -244,4 +300,65 @@
 
         function showProfile(userData) {
             document.getElementById('main').style.display = 'none';
-            document.getElementById('form').style.display = '
+            document.getElementById('form').style.display = 'none';
+            document.getElementById('profile').style.display = 'block';
+
+            document.getElementById("profileFio").innerText = userData.fio;
+            document.getElementById("profileProfession").innerText = userData.profession;
+            document.getElementById("profileAbout").innerText = userData.about;
+            if (userData.photo_url) {
+                document.getElementById("profilePhoto").src = userData.photo_url;
+                document.getElementById("profilePhoto").style.display = 'block';
+            } else {
+                document.getElementById("profilePhoto").style.display = 'none';
+            }
+        }
+
+        function showMasterList() {
+            document.getElementById('main').style.display = 'none';
+            document.getElementById('form').style.display = 'none';
+            document.getElementById('profile').style.display = 'none';
+            document.getElementById('masterList').style.display = 'block';
+
+            const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Simulate multiple user data
+            renderProfiles(allUserData);
+        }
+
+        function renderProfiles(users) {
+            const masterProfiles = document.getElementById('masterProfiles');
+            masterProfiles.innerHTML = '';
+
+            users.forEach(user => {
+                const userProfile = document.createElement('div');
+                userProfile.classList.add('user-profile');
+
+                const userFio = document.createElement('p');
+                userFio.innerHTML = `<strong>ФИО:</strong> ${user.fio}`;
+                userProfile.appendChild(userFio);
+
+                const userProfession = document.createElement('p');
+                userProfession.innerHTML = `<strong>Профессия:</strong> ${user.profession}`;
+                userProfile.appendChild(userProfession);
+
+                const userAbout = document.createElement('p');
+                userAbout.innerHTML = `<strong>О себе:</strong> ${user.about}`;
+                userProfile.appendChild(userAbout);
+
+                if (user.photo_url) {
+                    const userPhoto = document.createElement('img');
+                    userPhoto.src = user.photo_url;
+                    userProfile.appendChild(userPhoto);
+                }
+
+                masterProfiles.appendChild(userProfile);
+            });
+        }
+
+        function filterProfiles(filter) {
+            const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Simulate multiple user data
+            const filteredUsers = filter === 'all' ? allUserData : allUserData.filter(user => user.profession === filter);
+            renderProfiles(filteredUsers);
+        }
+    </script>
+</body>
+</html>
