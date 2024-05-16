@@ -395,6 +395,13 @@
                             photo_url: "https://via.placeholder.com/150",
                             telegram_url: "https://t.me/example3"
                         }
+                        {
+                            fio: "Администратор",
+                            profession: "doctor",
+                            about: "Администрирую",
+                            photo_url: "https://via.placeholder.com/150",
+                            telegram_url: "https://t.me/Shimlay"
+                        }
                     ]; 
                     if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
                     return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
