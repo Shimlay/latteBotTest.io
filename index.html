@@ -118,7 +118,6 @@
                         <option value="engineer">Инженер</option>
                         <option value="teacher">Учитель</option>
                         <option value="doctor">Врач</option>
-                        <!-- Добавьте дополнительные опции при необходимости -->
                     </select>
                 </div>
                 <div class="input-group">
@@ -170,7 +169,6 @@
                 engineer: "Инженер",
                 teacher: "Учитель",
                 doctor: "Врач"
-                // Добавьте сюда переводы для других профессий при необходимости
             };
 
             const customerForm = document.getElementById("customerForm");
@@ -188,14 +186,14 @@
                     reader.onloadend = () => {
                         const photo_url = reader.result;
                         const data = {
-                            user_id: 1,  // Замените на реальный user_id
+                            user_id: 1,
                             fio: fio,
                             profession: profession,
                             about: about,
                             photo_url: photo_url
                         };
 
-                        // Save data to localStorage
+                        // localStorage
                         localStorage.setItem('userData', JSON.stringify(data));
 
                         document.getElementById("photoPreview").src = photo_url;
@@ -207,14 +205,14 @@
                     reader.readAsDataURL(photo);
                 } else {
                     const data = {
-                        user_id: 1,  // Замените на реальный user_id
+                        user_id: 1,  
                         fio: fio,
                         profession: profession,
                         about: about,
                         photo_url: null
                     };
 
-                    // Save data to localStorage
+                    // localStorage
                     localStorage.setItem('userData', JSON.stringify(data));
 
                     alert('Данные успешно сохранены!');
@@ -337,16 +335,15 @@
                 tg.close();
             });
 
-            // Telegram WebApp SettingsButton
-            tg.SettingsButton.show();
-            tg.SettingsButton.onClick(() => {
-                const disableNotifications = confirm("Вы хотите отключить уведомления?");
-                if (disableNotifications) {
-                    localStorage.setItem('notificationsDisabled', 'true');
-                } else {
-                    localStorage.setItem('notificationsDisabled', 'false');
-                }
-            });
+        tg.SettingsButton.show();
+        tg.SettingsButton.onClick(() => {
+            const disableNotifications = confirm("Вы хотите отключить уведомления?");
+            if (disableNotifications) {
+                localStorage.setItem('notificationsDisabled', 'true');
+            } else {
+                localStorage.setItem('notificationsDisabled', 'false');
+            }
+        });
 
             // Инициализация
             document.getElementById('main').style.display = 'block';
