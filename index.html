@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Latte</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <style>
         body {
             font-family: 'Roboto', Arial, sans-serif;
@@ -143,8 +143,11 @@
             <input type="text" id="fio" name="fio" required>
 
             <label for="profession">Профессия:</label>
-        <select id="profession" name="profession" required>
-        </select>
+            <select id="profession" name="profession" required>
+                <option value="engineer">Инженер</option>
+                <option value="teacher">Учитель</option>
+                <option value="doctor">Врач</option>
+            </select>
 
             <label for="about">Расскажите о себе:</label>
             <textarea id="about" name="about" rows="4" required></textarea>
@@ -166,17 +169,43 @@
         <button id="backButton">Назад</button>
     </div>
     <div id="masterList">
-        <div class="search-bar">
-            <input type="text" id="search" placeholder="Поиск по профессии...">
+        <div class="filter-buttons">
+            <input type="text" id="search" placeholder="Поиск профессии...">
         </div>
         <div id="masterProfiles">
             <!-- Здесь будут отображаться профили пользователей -->
         </div>
         <button id="backToMain">Назад</button>
     </div>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Инициализация Select2 для выпадающего списка профессий
+            $("#profession").select2({
+                placeholder: "Выберите профессию",
+                language: {
+                    noResults: function() {
+                        return "Результаты не найдены";
+                    }
+                }
+            });
+
+            // Изменение текста опций на русский язык
+            const professionSelect = document.getElementById("profession");
+            const options = professionSelect.querySelectorAll("option");
+            options.forEach(option => {
+                option.textContent = professionTranslations[option.value];
+            });
+        });
+
+        // Переводы профессий на русский язык
+        const professionTranslations = {
+            engineer: "Инженер",
+            teacher: "Учитель",
+            doctor: "Врач"
+            // Добавьте сюда переводы для других профессий при необходимости
+        };
+
         let tg = window.Telegram.WebApp;
 
         tg.BackButton.show();
@@ -211,7 +240,7 @@
             const photo = document.getElementById("photo").files[0];
 
             if (photo) {
-                const reader = new FileReader();
+                               const reader = new FileReader();
                 reader.onloadend = () => {
                     const photo_url = reader.result;
                     const data = {
@@ -299,7 +328,7 @@
             document.getElementById('profile').style.display = 'block';
 
             document.getElementById("profileFio").innerText = userData.fio;
-            document.getElementById("profileProfession").innerText = userData.profession;
+            document.getElementById("profileProfession").innerText = professionTranslations[userData.profession] || userData.profession;
             document.getElementById("profileAbout").innerText = userData.about;
             if (userData.photo_url) {
                 document.getElementById("profilePhoto").src = userData.photo_url;
@@ -332,7 +361,7 @@
                 userProfile.appendChild(userFio);
 
                 const userProfession = document.createElement('p');
-                userProfession.innerHTML = `<strong>Профессия:</strong> ${user.profession}`;
+                userProfession.innerHTML = `<strong>Профессия:</strong> ${professionTranslations[user.profession] || user.profession}`;
                 userProfile.appendChild(userProfession);
 
                 const userAbout = document.createElement('p');
@@ -352,37 +381,8 @@
         function filterByProfession(profession) {
             const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Здесь должны быть все данные пользователей
             if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
-            return allUserData.filter(user => user.profession.toLowerCase().includes(profession.toLowerCase()));
+            return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
         }
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Инициализация Select2 для выпадающего списка профессий
-            $("#profession").select2({
-                placeholder: "Выберите профессию",
-                language: {
-                    noResults: function() {
-                        return "Результаты не найдены";
-                    }
-                }
-            });
-
-            // Изменение текста опций на русский язык
-            const professionSelect = document.getElementById("profession");
-            const options = professionSelect.querySelectorAll("option");
-            options.forEach(option => {
-                option.textContent = professionTranslations[option.value];
-            });
-        });
-
-        // Переводы профессий на русский язык
-        const professionTranslations = {
-            engineer: "Инженер",
-            teacher: "Учитель",
-            doctor: "Врач"
-            // Добавьте сюда переводы для других профессий при необходимости
-        };
     </script>
 </body>
 </html>
-
