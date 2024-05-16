@@ -118,6 +118,7 @@
                         <option value="engineer">Инженер</option>
                         <option value="teacher">Учитель</option>
                         <option value="doctor">Врач</option>
+                        <!-- Добавьте дополнительные опции при необходимости -->
                     </select>
                 </div>
                 <div class="input-group">
@@ -153,202 +154,254 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            let tg = window.Telegram.WebApp;
-            tg.expand();
-            // Инициализация Select2 для выпадающего списка профессий
-            $("#profession").select2({
-                placeholder: "Выберите профессию",
-                language: {
-                    noResults: function() {
-                        return "Результаты не найдены";
+            if (window.Telegram && window.Telegram.WebApp) {
+                let tg = window.Telegram.WebApp;
+                tg.expand();
+
+                // Инициализация Select2 для выпадающего списка профессий
+                $("#profession").select2({
+                    placeholder: "Выберите профессию",
+                    language: {
+                        noResults: function() {
+                            return "Результаты не найдены";
+                        }
                     }
-                }
-            });
+                });
 
-            const professionTranslations = {
-                engineer: "Инженер",
-                teacher: "Учитель",
-                doctor: "Врач"
-            };
+                const professionTranslations = {
+                    engineer: "Инженер",
+                    teacher: "Учитель",
+                    doctor: "Врач"
+                    // Добавьте сюда переводы для других профессий при необходимости
+                };
 
-            const customerForm = document.getElementById("customerForm");
+                const customerForm = document.getElementById("customerForm");
 
-            customerForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
+                customerForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
 
-                const fio = document.getElementById("fio").value;
-                const profession = document.getElementById("profession").value;
-                const about = document.getElementById("about").value;
-                const photo = document.getElementById("photo").files[0];
+                    const fio = document.getElementById("fio").value;
+                    const profession = document.getElementById("profession").value;
+                    const about = document.getElementById("about").value;
+                    const photo = document.getElementById("photo").files[0];
 
-                if (photo) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        const photo_url = reader.result;
+                    if (photo) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            const photo_url = reader.result;
+                            const data = {
+                                user_id: tg.initDataUnsafe.user.id,
+                                fio: fio,
+                                profession: profession,
+                                about: about,
+                                photo_url: photo_url
+                            };
+
+                            // Save data to localStorage
+                            localStorage.setItem('userData', JSON.stringify(data));
+
+                            document.getElementById("photoPreview").src = photo_url;
+                            document.getElementById("photoPreview").style.display = 'block';
+
+                            alert('Данные успешно сохранены!');
+                            showProfile(data);
+                        };
+                        reader.readAsDataURL(photo);
+                    } else {
                         const data = {
-                            user_id: 1,
+                            user_id: tg.initDataUnsafe.user.id,
                             fio: fio,
                             profession: profession,
                             about: about,
-                            photo_url: photo_url
+                            photo_url: null
                         };
 
-                        // localStorage
+                        // Save data to localStorage
                         localStorage.setItem('userData', JSON.stringify(data));
-
-                        document.getElementById("photoPreview").src = photo_url;
-                        document.getElementById("photoPreview").style.display = 'block';
 
                         alert('Данные успешно сохранены!');
                         showProfile(data);
-                    };
-                    reader.readAsDataURL(photo);
-                } else {
-                    const data = {
-                        user_id: 1,  
-                        fio: fio,
-                        profession: profession,
-                        about: about,
-                        photo_url: null
-                    };
-
-                    // localStorage
-                    localStorage.setItem('userData', JSON.stringify(data));
-
-                    alert('Данные успешно сохранены!');
-                    showProfile(data);
-                }
-            });
-
-            document.getElementById('masters').addEventListener("click", () => {
-                showMasterList();
-            });
-
-            document.getElementById('editButton').addEventListener('click', () => {
-                showForm();
-            });
-
-            document.getElementById('backButton').addEventListener('click', () => {
-                document.getElementById('main').style.display = 'block';
-                document.getElementById('form').style.display = 'none';
-            });
-
-            document.getElementById('backButtonProfile').addEventListener('click', () => {
-                document.getElementById('main').style.display = 'block';
-                document.getElementById('profile').style.display = 'none';
-            });
-
-            document.getElementById('backToMain').addEventListener('click', () => {
-                document.getElementById('main').style.display = 'block';
-                document.getElementById('masterList').style.display = 'none';
-            });
-
-            document.getElementById('search').addEventListener('input', () => {
-                const searchValue = document.getElementById('search').value;
-                const filteredUsers = filterByProfession(searchValue);
-                renderProfiles(filteredUsers);
-            });
-
-            function showForm() {
-                document.getElementById('main').style.display = 'none';
-                document.getElementById('profile').style.display = 'none';
-                document.getElementById('form').style.display = 'block';
-
-                const userData = JSON.parse(localStorage.getItem('userData'));
-                if (userData) {
-                    document.getElementById("fio").value = userData.fio || '';
-                    document.getElementById("profession").value = userData.profession || 'engineer';
-                    document.getElementById("about").value = userData.about || '';
-                    if (userData.photo_url) {
-                        document.getElementById("photoPreview").src = userData.photo_url;
-                        document.getElementById("photoPreview").style.display = 'block';
                     }
-                } else {
-                    document.getElementById("customerForm").reset();
-                    document.getElementById("photoPreview").style.display = 'none';
-                }
-            }
-
-        function showProfile(userData) {
-                document.getElementById('main').style.display = 'none';
-                document.getElementById('form').style.display = 'none';
-                document.getElementById('profile').style.display = 'block';
-
-                document.getElementById("profileFio").innerText = userData.fio;
-                document.getElementById("profileProfession").innerText = professionTranslations[userData.profession];
-                document.getElementById("profileAbout").innerText = userData.about;
-                if (userData.photo_url) {
-                    document.getElementById("profilePhoto").src = userData.photo_url;
-                    document.getElementById("profilePhoto").style.display = 'block';
-                } else {
-                    document.getElementById("profilePhoto").style.display = 'none';
-                }
-            }
-
-            function showMasterList() {
-                document.getElementById('main').style.display = 'none';
-                document.getElementById('form').style.display = 'none';
-                document.getElementById('profile').style.display = 'none';
-                document.getElementById('masterList').style.display = 'block';
-
-                const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Simulate multiple user data
-                renderProfiles(allUserData);
-            }
-
-            function renderProfiles(users) {
-                const masterProfiles = document.getElementById('masterProfiles');
-                masterProfiles.innerHTML = '';
-
-                users.forEach(user => {
-                    const userProfile = document.createElement('div');
-                    userProfile.classList.add('user-profile');
-
-                    const userFio = document.createElement('p');
-                    userFio.innerHTML = `<strong>ФИО:</strong> ${user.fio}`;
-                    userProfile.appendChild(userFio);
-
-                    const userProfession = document.createElement('p');
-                    userProfession.innerHTML = `<strong>Профессия:</strong> ${professionTranslations[user.profession]}`;
-                    userProfile.appendChild(userProfession);
-
-                    const userAbout = document.createElement('p');
-                    userAbout.innerHTML = `<strong>О себе:</strong> ${user.about}`;
-                    userProfile.appendChild(userAbout);
-
-                    if (user.photo_url) {
-                        const userPhoto = document.createElement('img');
-                        userPhoto.src = user.photo_url;
-                        userProfile.appendChild(userPhoto);
-                    }
-
-                    masterProfiles.appendChild(userProfile);
                 });
-            }
 
-            function filterByProfession(profession) {
-                const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Здесь должны быть все данные пользователей
-                if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
-                return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
-            }
-            tg.BackButton.show();
-            tg.BackButton.onClick(() => {
-                tg.close();
-            });
+                document.getElementById('masters').addEventListener("click", () => {
+                    showMasterList();
+                });
 
-            tg.SettingsButton.show();
-            tg.SettingsButton.onClick(() => {
-                const disableNotifications = confirm("Вы хотите отключить уведомления?");
-                if (disableNotifications) {
-                    localStorage.setItem('notificationsDisabled', 'true');
-                } else {
-                    localStorage.setItem('notificationsDisabled', 'false');
+                document.getElementById('editButton').addEventListener('click', () => {
+                    showForm();
+                });
+
+                document.getElementById('backButton').addEventListener('click', () => {
+                    document.getElementById('main').style.display = 'block';
+                    document.getElementById('form').style.display = 'none';
+                });
+
+                document.getElementById('backButtonProfile').addEventListener('click', () => {
+                    document.getElementById('main').style.display = 'block';
+                    document.getElementById('profile').style.display = 'none';
+                });
+
+                document.getElementById('backToMain').addEventListener('click', () => {
+                    document.getElementById('main').style.display = 'block';
+                    document.getElementById('masterList').style.display = 'none';
+                });
+
+                document.getElementById('search').addEventListener('input', () => {
+                    const searchValue = document.getElementById('search').value;
+                    const filteredUsers = filterByProfession(searchValue);
+                    renderProfiles(filteredUsers);
+                });
+
+                function showForm() {
+                    document.getElementById('main').style.display = 'none';
+                    document.getElementById('profile').style.display = 'none';
+                    document.getElementById('form').style.display = 'block';
+
+                    const userData = JSON.parse(localStorage.getItem('userData'));
+                    if (userData) {
+                        document.getElementById("fio").value = userData.fio || '';
+                        document.getElementById("profession").value = userData.profession || 'engineer';
+                        document.getElementById("about").value = userData.about || '';
+                        if (userData.photo_url) {
+                            document.getElementById("photoPreview").src = userData.photo_url;
+                            document.getElementById("photoPreview").style.display = 'block';
+                        }
+                    } else {
+                        document.getElementById("customerForm").reset();
+                        document.getElementById("photoPreview").style.display = 'none';
+                    }
                 }
-            });
 
-            // Инициализация
-            document.getElementById('main').style.display = 'block';
+                function showProfile(userData) {
+                    document.getElementById('main').style.display = 'none';
+                    document.getElementById('form').style.display = 'none';
+                    document.getElementById('profile').style.display = 'block';
+
+                    document.getElementById("profileFio").innerText = userData.fio;
+                    document.getElementById("profileProfession").innerText = professionTranslations[userData.profession];
+                    document.getElementById("profileAbout").innerText = userData.about;
+                    if (userData.photo_url) {
+                        document.getElementById("profilePhoto").src = userData.photo_url;
+                        document.getElementById("profilePhoto").style.display = 'block';
+                    } else {
+                        document.getElementById("profilePhoto").style.display = 'none';
+                    }
+                }
+
+                function showMasterList() {
+                    document.getElementById('main').style.display = 'none';
+                    document.getElementById('form').style.display = 'none';
+                    document.getElementById('profile').style.display = 'none';
+                    document.getElementById('masterList').style.display = 'block';
+
+                    const allUserData = [
+                        JSON.parse(localStorage.getItem('userData')),
+                        {
+                            fio: "Иванов Иван Иванович",
+                            profession: "engineer",
+                            about: "Опытный инженер с 10-летним стажем работы.",
+                            photo_url: "https://via.placeholder.com/150"
+                        },
+                        {
+                            fio: "Петров Петр Петрович",
+                            profession: "teacher",
+                            about: "Учитель математики в средней школе.",
+                            photo_url: "https://via.placeholder.com/150"
+                        },
+                        {
+                            fio: "Сидоров Сидор Сидорович",
+                            profession: "doctor",
+                            about: "Врач общей практики.",
+                            photo_url: "https://via.placeholder.com/150"
+                        }
+                    ]; // Симуляция данных нескольких пользователей
+                    renderProfiles(allUserData);
+                }
+
+                function renderProfiles(users) {
+                    const masterProfiles = document.getElementById('masterProfiles');
+                    masterProfiles.innerHTML = '';
+
+                    users.forEach(user => {
+                        if (user) {
+                            const userProfile = document.createElement('div');
+                            userProfile.classList.add('user-profile');
+
+                            const userFio = document.createElement('p');
+                            userFio.innerHTML = `<strong>ФИО:</strong> ${user.fio}`;
+                            userProfile.appendChild(userFio);
+
+                            const userProfession = document.createElement('p');
+                            userProfession.innerHTML = `<strong>Профессия:</strong> ${professionTranslations[user.profession]}`;
+                            userProfile.appendChild(userProfession);
+
+                            const userAbout = document.createElement('p');
+                            userAbout.innerHTML = `<strong>О себе:</strong> ${user.about}`;
+                            userProfile.appendChild(userAbout);
+
+                            if (user.photo_url) {
+                                const userPhoto = document.createElement('img');
+                                userPhoto.src = user.photo_url;
+                                userProfile.appendChild(userPhoto);
+                            }
+
+                            masterProfiles.appendChild(userProfile);
+                        }
+                    });
+                }
+
+                function filterByProfession(profession) {
+                    const allUserData = [
+                        JSON.parse(localStorage.getItem('userData')),
+                        {
+                            fio: "Иванов Иван Иванович",
+                            profession: "engineer",
+                            about: "Опытный инженер с 10-летним стажем работы.",
+                            photo_url: "https://via.placeholder.com/150"
+                        },
+                        {
+                            fio: "Петров Петр Петрович",
+                            profession: "teacher",
+                            about: "Учитель математики в средней школе.",
+                            photo_url: "https://via.placeholder.com/150"
+                        },
+                        {
+                            fio: "Сидоров Сидор Сидорович",
+                            profession: "doctor",
+                            about: "Врач общей практики.",
+                            photo_url: "https://via.placeholder.com/150"
+                        }
+                    ]; // Здесь должны быть все данные пользователей
+                    if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
+                    return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
+                }
+
+                // Telegram WebApp BackButton
+                tg.BackButton.show();
+                tg.BackButton.onClick(() => {
+                    tg.close();
+                });
+
+                // Telegram WebApp SettingsButton
+                tg.SettingsButton.show();
+                tg.SettingsButton.onClick(() => {
+                    const disableNotifications = confirm("Вы хотите отключить уведомления?");
+                    if (disableNotifications) {
+                        localStorage.setItem('notificationsDisabled', 'true');
+                    } else {
+                        localStorage.setItem('notificationsDisabled', 'false');
+                    }
+                });
+
+                // Инициализация
+                document.getElementById('main').style.display = 'block';
+            } else {
+                console.error("Telegram WebApp not initialized");
+            }
         });
     </script>
 </body>
