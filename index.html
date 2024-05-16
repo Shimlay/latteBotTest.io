@@ -143,11 +143,8 @@
             <input type="text" id="fio" name="fio" required>
 
             <label for="profession">Профессия:</label>
-            <select id="profession" name="profession" required>
-                <option value="engineer">Инженер</option>
-                <option value="teacherь">Учитель</option>
-                <option value="doctorр">Врач</option>
-            </select>
+        <select id="profession" name="profession" required>
+        </select>
 
             <label for="about">Расскажите о себе:</label>
             <textarea id="about" name="about" rows="4" required></textarea>
@@ -357,6 +354,34 @@
             if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
             return allUserData.filter(user => user.profession.toLowerCase().includes(profession.toLowerCase()));
         }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Инициализация Select2 для выпадающего списка профессий
+            $("#profession").select2({
+                placeholder: "Выберите профессию",
+                language: {
+                    noResults: function() {
+                        return "Результаты не найдены";
+                    }
+                }
+            });
+
+            // Изменение текста опций на русский язык
+            const professionSelect = document.getElementById("profession");
+            const options = professionSelect.querySelectorAll("option");
+            options.forEach(option => {
+                option.textContent = professionTranslations[option.value];
+            });
+        });
+
+        // Переводы профессий на русский язык
+        const professionTranslations = {
+            engineer: "Инженер",
+            teacher: "Учитель",
+            doctor: "Врач"
+            // Добавьте сюда переводы для других профессий при необходимости
+        };
     </script>
 </body>
 </html>
