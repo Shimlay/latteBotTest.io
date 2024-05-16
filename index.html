@@ -155,6 +155,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            let tg = window.Telegram.WebApp;
+            tg.expand();
             // Инициализация Select2 для выпадающего списка профессий
             $("#profession").select2({
                 placeholder: "Выберите профессию",
@@ -330,20 +332,20 @@
                 if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
                 return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
             }
-        tg.BackButton.show();
-        tg.BackButton.onClick(() => {
-            tg.close();
-        });
+            tg.BackButton.show();
+            tg.BackButton.onClick(() => {
+                tg.close();
+            });
 
-        tg.SettingsButton.show();
-        tg.SettingsButton.onClick(() => {
-            const disableNotifications = confirm("Вы хотите отключить уведомления?");
-            if (disableNotifications) {
-                localStorage.setItem('notificationsDisabled', 'true');
-            } else {
-                localStorage.setItem('notificationsDisabled', 'false');
-            }
-        });
+            tg.SettingsButton.show();
+            tg.SettingsButton.onClick(() => {
+                const disableNotifications = confirm("Вы хотите отключить уведомления?");
+                if (disableNotifications) {
+                    localStorage.setItem('notificationsDisabled', 'true');
+                } else {
+                    localStorage.setItem('notificationsDisabled', 'false');
+                }
+            });
 
             // Инициализация
             document.getElementById('main').style.display = 'block';
