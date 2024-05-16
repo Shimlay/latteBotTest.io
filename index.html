@@ -330,10 +330,10 @@
                 if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
                 return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
             }
-            tg.BackButton.show();
-            tg.BackButton.onClick(() => {
-                tg.close();
-            });
+        tg.BackButton.show();
+        tg.BackButton.onClick(() => {
+            tg.close();
+        });
 
         tg.SettingsButton.show();
         tg.SettingsButton.onClick(() => {
