@@ -47,7 +47,7 @@
         #main button:hover {
             background-color: #0056b3;
         }
-        #form {
+        #form, #profile {
             display: none;
             padding: 40px 20px;
             background-color: #ffffff;
@@ -56,12 +56,12 @@
             max-width: 600px;
             margin: 50px auto;
         }
-        #form label {
+        #form label, #profile label {
             display: block;
             font-weight: bold;
             margin-top: 20px;
         }
-        #form input, #form select, #form textarea {
+        #form input, #form select, #form textarea, #profile input, #profile select, #profile textarea {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -69,10 +69,10 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
-        #form textarea {
+        #form textarea, #profile textarea {
             resize: vertical;
         }
-        #form button {
+        #form button, #profile button {
             background-color: #28a745;
             color: #fff;
             border: none;
@@ -83,8 +83,12 @@
             margin-top: 20px;
             transition: background-color 0.3s;
         }
-        #form button:hover {
+        #form button:hover, #profile button:hover {
             background-color: #218838;
+        }
+        #profile img {
+            max-width: 100%;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -118,6 +122,14 @@
         </form>
         <img id="photoPreview" style="display:none; max-width: 100%; margin-top: 20px;">
     </div>
+    <div id="profile">
+        <h2>Профиль пользователя</h2>
+        <p><strong>ФИО:</strong> <span id="profileFio"></span></p>
+        <p><strong>Профессия:</strong> <span id="profileProfession"></span></p>
+        <p><strong>О себе:</strong> <span id="profileAbout"></span></p>
+        <img id="profilePhoto" style="display:none;">
+        <button id="backButton">Назад</button>
+    </div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         let tg = window.Telegram.WebApp;
@@ -127,6 +139,7 @@
         tg.BackButton.onClick(() => {
             document.getElementById('main').style.display = 'block';
             document.getElementById('form').style.display = 'none';
+            document.getElementById('profile').style.display = 'none';
         });
 
         let masters = document.getElementById("masters");
@@ -197,7 +210,27 @@
         });
 
         masters.addEventListener("click", () => {
-            // Открыть форму для выбора мастера
+            document.getElementById("main").style.display = "none";
+            document.getElementById("profile").style.display = "block";
+
+            // Load data from localStorage
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (userData) {
+                document.getElementById("profileFio").textContent = userData.fio || '';
+                document.getElementById("profileProfession").textContent = userData.profession || '';
+                document.getElementById("profileAbout").textContent = userData.about || '';
+                if (userData.photo_url) {
+                    document.getElementById("profilePhoto").src = userData.photo_url;
+                    document.getElementById("profilePhoto").style.display = 'block';
+                } else {
+                    document.getElementById("profilePhoto").style.display = 'none';
+                }
+            }
+        });
+
+        document.getElementById('backButton').addEventListener('click', () => {
+            document.getElementById('main').style.display = 'block';
+            document.getElementById('profile').style.display = 'none';
         });
     </script>
 </body>
