@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Latte</title>
+    <title>Профиль пользователя</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <style>
         body {
@@ -83,53 +82,60 @@
     </style>
 </head>
 <body>
-    <div id="main">
-        <h1>Биржа услуг</h1>
-        <img src="latte.png" alt="Latte Logo">
-        <p>Добро пожаловать</p>
-        <button id="masters">Выбрать мастера</button>
-        <button id="customers">Мой профиль</button>
-    </div>
-    <div id="form">
-        <form id="customerForm">
-            <label for="fio">ФИО:</label>
-            <input type="text" id="fio" name="fio" required>
-
-            <label for="profession">Профессия:</label>
-            <select id="profession" name="profession" required>
-                <option value="engineer">Инженер</option>
-                <option value="teacher">Учитель</option>
-                <option value="doctor">Врач</option>
-            </select>
-
-            <label for="about">Расскажите о себе:</label>
-            <textarea id="about" name="about" rows="4" required></textarea>
-
-            <label for="photo">Прикрепите фото:</label>
-            <input type="file" id="photo" name="photo" accept="image/*">
-
-            <button type="submit">Отправить</button>
-        </form>
-        <img id="photoPreview" style="display:none; max-width: 100%; margin-top: 20px;">
-    </div>
-    <div id="profile">
-        <h2>Профиль пользователя</h2>
-        <p><strong>ФИО:</strong> <span id="profileFio"></span></p>
-        <p><strong>Профессия:</strong> <span id="profileProfession"></span></p>
-        <p><strong>О себе:</strong> <span id="profileAbout"></span></p>
-        <img id="profilePhoto" style="display:none;">
-        <button id="editButton">Редактировать</button>
-        <button id="backButton">Назад</button>
-    </div>
-    <div id="masterList">
-        <div class="filter-buttons">
-            <input type="text" id="search" placeholder="Поиск профессии...">
+    <div class="container">
+        <div id="main">
+            <h1>Добро пожаловать</h1>
+            <button id="editButton" class="button">Редактировать профиль</button>
+            <button id="masters" class="button">Просмотреть всех мастеров</button>
         </div>
-        <div id="masterProfiles">
-            <!-- Здесь будут отображаться профили пользователей -->
+
+        <div id="form">
+            <h2>Редактировать профиль</h2>
+            <form id="customerForm">
+                <div class="input-group">
+                    <label for="fio">ФИО</label>
+                    <input type="text" id="fio" name="fio" required>
+                </div>
+                <div class="input-group">
+                    <label for="profession">Профессия</label>
+                    <select id="profession" name="profession" required>
+                        <option value="engineer">Инженер</option>
+                        <option value="teacher">Учитель</option>
+                        <option value="doctor">Врач</option>
+                        <!-- Добавьте дополнительные опции при необходимости -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="about">О себе</label>
+                    <textarea id="about" name="about" rows="4" required></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="photo">Фото</label>
+                    <input type="file" id="photo" name="photo" accept="image/*">
+                    <img id="photoPreview" src="" alt="Фото пользователя">
+                </div>
+                <button type="submit" class="button">Сохранить</button>
+            </form>
+            <button id="backButton" class="button">Назад</button>
         </div>
-        <button id="backToMain">Назад</button>
+
+        <div id="profile">
+            <h2>Профиль пользователя</h2>
+            <p><strong>ФИО:</strong> <span id="profileFio"></span></p>
+            <p><strong>Профессия:</strong> <span id="profileProfession"></span></p>
+            <p><strong>О себе:</strong> <span id="profileAbout"></span></p>
+            <img id="profilePhoto" src="" alt="Фото пользователя">
+            <button id="backButtonProfile" class="button">Назад</button>
+        </div>
+
+        <div id="masterList">
+            <h2>Все мастера</h2>
+            <input type="text" id="search" placeholder="Поиск по профессии">
+            <div id="masterProfiles"></div>
+            <button id="backToMain" class="button">Назад</button>
+        </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -143,199 +149,176 @@
                 }
             });
 
-            // Изменение текста опций на русский язык
-            const professionSelect = document.getElementById("profession");
-            const options = professionSelect.querySelectorAll("option");
-            options.forEach(option => {
-                option.textContent = professionTranslations[option.value];
-            });
-        });
+            const professionTranslations = {
+                engineer: "Инженер",
+                teacher: "Учитель",
+                doctor: "Врач"
+                // Добавьте сюда переводы для других профессий при необходимости
+            };
 
-        // Переводы профессий на русский язык
-        const professionTranslations = {
-            engineer: "Инженер",
-            teacher: "Учитель",
-            doctor: "Врач"
-            // Добавьте сюда переводы для других профессий при необходимости
-        };
+            const customerForm = document.getElementById("customerForm");
 
-        let tg = window.Telegram.WebApp;
+            customerForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
 
-        tg.BackButton.show();
+                const fio = document.getElementById("fio").value;
+                const profession = document.getElementById("profession").value;
+                const about = document.getElementById("about").value;
+                const photo = document.getElementById("photo").files[0];
 
-        tg.BackButton.onClick(() => {
-            document.getElementById('main').style.display = 'block';
-            document.getElementById('form').style.display = 'none';
-            document.getElementById('profile').style.display = 'none';
-            document.getElementById('masterList').style.display = 'none';
-        });
+                if (photo) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        const photo_url = reader.result;
+                        const data = {
+                            user_id: tg.initDataUnsafe.user.id,
+                            fio: fio,
+                            profession: profession,
+                            about: about,
+                            photo_url: photo_url
+                        };
 
-        let masters = document.getElementById("masters");
-        let customers = document.getElementById("customers");
+                        // Save data to localStorage
+                        localStorage.setItem('userData', JSON.stringify(data));
 
-        customers.addEventListener("click", () => {
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            if (userData) {
-                showProfile(userData);
-            } else {
-                showForm();
-            }
-        });
+                        document.getElementById("photoPreview").src = photo_url;
+                        document.getElementById("photoPreview").style.display = 'block';
 
-        let customerForm = document.getElementById("customerForm");
-
-        customerForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const fio = document.getElementById("fio").value;
-            const profession = document.getElementById("profession").value;
-            const about = document.getElementById("about").value;
-            const photo = document.getElementById("photo").files[0];
-
-            if (photo) {
-                               const reader = new FileReader();
-                reader.onloadend = () => {
-                    const photo_url = reader.result;
+                        alert('Данные успешно сохранены!');
+                        showProfile(data);
+                    };
+                    reader.readAsDataURL(photo);
+                } else {
                     const data = {
                         user_id: tg.initDataUnsafe.user.id,
                         fio: fio,
                         profession: profession,
                         about: about,
-                        photo_url: photo_url
+                        photo_url: null
                     };
 
                     // Save data to localStorage
                     localStorage.setItem('userData', JSON.stringify(data));
 
-                    document.getElementById("photoPreview").src = photo_url;
-                    document.getElementById("photoPreview").style.display = 'block';
-
                     alert('Данные успешно сохранены!');
                     showProfile(data);
-                };
-                reader.readAsDataURL(photo);
-            } else {
-                const data = {
-                    user_id: tg.initDataUnsafe.user.id,
-                    fio: fio,
-                    profession: profession,
-                    about: about,
-                    photo_url: null
-                };
-
-                // Save data to localStorage
-                localStorage.setItem('userData', JSON.stringify(data));
-
-                alert('Данные успешно сохранены!');
-                showProfile(data);
-            }
-        });
-
-        masters.addEventListener("click", () => {
-            showMasterList();
-        });
-
-        document.getElementById('editButton').addEventListener('click', () => {
-            showForm();
-        });
-
-        document.getElementById('backButton').addEventListener('click', () => {
-            document.getElementById('main').style.display = 'block';
-            document.getElementById('profile').style.display = 'none';
-        });
-
-        document.getElementById('backToMain').addEventListener('click', () => {
-            document.getElementById('main').style.display = 'block';
-            document.getElementById('masterList').style.display = 'none';
-        });
-
-        document.getElementById('search').addEventListener('input', () => {
-            const searchValue = document.getElementById('search').value;
-            const filteredUsers = filterByProfession(searchValue);
-            renderProfiles(filteredUsers);
-        });
-
-        function showForm() {
-            document.getElementById('main').style.display = 'none';
-            document.getElementById('profile').style.display = 'none';
-            document.getElementById('form').style.display = 'block';
-
-            const userData = JSON.parse(localStorage.getItem('userData'));
-            if (userData) {
-                document.getElementById("fio").value = userData.fio || '';
-                document.getElementById("profession").value = userData.profession || 'engineer';
-                document.getElementById("about").value = userData.about || '';
-                if (userData.photo_url) {
-                    document.getElementById("photoPreview").src = userData.photo_url;
-                    document.getElementById("photoPreview").style.display = 'block';
                 }
-            } else {
-                document.getElementById("customerForm").reset();
-                document.getElementById("photoPreview").style.display = 'none';
+            });
+
+            document.getElementById('masters').addEventListener("click", () => {
+                showMasterList();
+            });
+
+            document.getElementById('editButton').addEventListener('click', () => {
+                showForm();
+            });
+
+            document.getElementById('backButton').addEventListener('click', () => {
+                document.getElementById('main').style.display = 'block';
+                document.getElementById('form').style.display = 'none';
+            });
+
+            document.getElementById('backButtonProfile').addEventListener('click', () => {
+                document.getElementById('main').style.display = 'block';
+                document.getElementById('profile').style.display = 'none';
+            });
+
+            document.getElementById('backToMain').addEventListener('click', () => {
+                document.getElementById('main').style.display = 'block';
+                document.getElementById('masterList').style.display = 'none';
+            });
+
+            document.getElementById('search').addEventListener('input', () => {
+                const searchValue = document.getElementById('search').value;
+                const filteredUsers = filterByProfession(searchValue);
+                renderProfiles(filteredUsers);
+            });
+
+            function showForm() {
+                document.getElementById('main').style.display = 'none';
+                document.getElementById('profile').style.display = 'none';
+                document.getElementById('form').style.display = 'block';
+
+                const userData = JSON.parse(localStorage.getItem('userData'));
+                if (userData) {
+                    document.getElementById("fio").value = userData.fio || '';
+                    document.getElementById("profession").value = userData.profession || 'engineer';
+                    document.getElementById("about").value = userData.about || '';
+                    if (userData.photo_url) {
+                        document.getElementById("photoPreview").src = userData.photo_url;
+                        document.getElementById("photoPreview").style.display = 'block';
+                    }
+                } else {
+                    document.getElementById("customerForm").reset();
+                    document.getElementById("photoPreview").style.display = 'none';
+                }
             }
-        }
 
         function showProfile(userData) {
-            document.getElementById('main').style.display = 'none';
-            document.getElementById('form').style.display = 'none';
-            document.getElementById('profile').style.display = 'block';
+                document.getElementById('main').style.display = 'none';
+                document.getElementById('form').style.display = 'none';
+                document.getElementById('profile').style.display = 'block';
 
-            document.getElementById("profileFio").innerText = userData.fio;
-            document.getElementById("profileProfession").innerText = professionTranslations[userData.profession] || userData.profession;
-            document.getElementById("profileAbout").innerText = userData.about;
-            if (userData.photo_url) {
-                document.getElementById("profilePhoto").src = userData.photo_url;
-                document.getElementById("profilePhoto").style.display = 'block';
-            } else {
-                document.getElementById("profilePhoto").style.display = 'none';
-            }
-        }
-
-        function showMasterList() {
-            document.getElementById('main').style.display = 'none';
-            document.getElementById('form').style.display = 'none';
-            document.getElementById('profile').style.display = 'none';
-            document.getElementById('masterList').style.display = 'block';
-
-            const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Simulate multiple user data
-            renderProfiles(allUserData);
-        }
-
-        function renderProfiles(users) {
-            const masterProfiles = document.getElementById('masterProfiles');
-            masterProfiles.innerHTML = '';
-
-            users.forEach(user => {
-                const userProfile = document.createElement('div');
-                userProfile.classList.add('user-profile');
-
-                const userFio = document.createElement('p');
-                userFio.innerHTML = `<strong>ФИО:</strong> ${user.fio}`;
-                userProfile.appendChild(userFio);
-
-                const userProfession = document.createElement('p');
-                userProfession.innerHTML = `<strong>Профессия:</strong> ${professionTranslations[user.profession] || user.profession}`;
-                userProfile.appendChild(userProfession);
-
-                const userAbout = document.createElement('p');
-                userAbout.innerHTML = `<strong>О себе:</strong> ${user.about}`;
-                userProfile.appendChild(userAbout);
-
-                if (user.photo_url) {
-                    const userPhoto = document.createElement('img');
-                    userPhoto.src = user.photo_url;
-                    userProfile.appendChild(userPhoto);
+                document.getElementById("profileFio").innerText = userData.fio;
+                document.getElementById("profileProfession").innerText = professionTranslations[userData.profession];
+                document.getElementById("profileAbout").innerText = userData.about;
+                if (userData.photo_url) {
+                    document.getElementById("profilePhoto").src = userData.photo_url;
+                    document.getElementById("profilePhoto").style.display = 'block';
+                } else {
+                    document.getElementById("profilePhoto").style.display = 'none';
                 }
+            }
 
-                masterProfiles.appendChild(userProfile);
-            });
-        }
+            function showMasterList() {
+                document.getElementById('main').style.display = 'none';
+                document.getElementById('form').style.display = 'none';
+                document.getElementById('profile').style.display = 'none';
+                document.getElementById('masterList').style.display = 'block';
 
-        function filterByProfession(profession) {
-            const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Здесь должны быть все данные пользователей
-            if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
-            return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
-        }
+                const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Simulate multiple user data
+                renderProfiles(allUserData);
+            }
+
+            function renderProfiles(users) {
+                const masterProfiles = document.getElementById('masterProfiles');
+                masterProfiles.innerHTML = '';
+
+                users.forEach(user => {
+                    const userProfile = document.createElement('div');
+                    userProfile.classList.add('user-profile');
+
+                    const userFio = document.createElement('p');
+                    userFio.innerHTML = `<strong>ФИО:</strong> ${user.fio}`;
+                    userProfile.appendChild(userFio);
+
+                    const userProfession = document.createElement('p');
+                    userProfession.innerHTML = `<strong>Профессия:</strong> ${professionTranslations[user.profession]}`;
+                    userProfile.appendChild(userProfession);
+
+                    const userAbout = document.createElement('p');
+                    userAbout.innerHTML = `<strong>О себе:</strong> ${user.about}`;
+                    userProfile.appendChild(userAbout);
+
+                    if (user.photo_url) {
+                        const userPhoto = document.createElement('img');
+                        userPhoto.src = user.photo_url;
+                        userProfile.appendChild(userPhoto);
+                    }
+
+                    masterProfiles.appendChild(userProfile);
+                });
+            }
+
+            function filterByProfession(profession) {
+                const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Здесь должны быть все данные пользователей
+                if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
+                return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
+            }
+
+            // Инициализация
+            document.getElementById('main').style.display = 'block';
+        });
     </script>
 </body>
 </html>
