@@ -135,6 +135,7 @@
             <button id="backToMain" class="button">Назад</button>
         </div>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
@@ -171,7 +172,7 @@
                     reader.onloadend = () => {
                         const photo_url = reader.result;
                         const data = {
-                            user_id: tg.initDataUnsafe.user.id,
+                            user_id: 1,  // Замените на реальный user_id
                             fio: fio,
                             profession: profession,
                             about: about,
@@ -190,7 +191,7 @@
                     reader.readAsDataURL(photo);
                 } else {
                     const data = {
-                        user_id: tg.initDataUnsafe.user.id,
+                        user_id: 1,  // Замените на реальный user_id
                         fio: fio,
                         profession: profession,
                         about: about,
