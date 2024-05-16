@@ -168,11 +168,8 @@
         <button id="backButton">Назад</button>
     </div>
     <div id="masterList">
-        <div class="filter-buttons">
-            <button data-filter="all">Все</button>
-            <button data-filter="engineer">Инженер</button>
-            <button data-filter="teacher">Учитель</button>
-            <button data-filter="doctor">Врач</button>
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Поиск по профессии...">
         </div>
         <div id="masterProfiles">
             <!-- Здесь будут отображаться профили пользователей -->
@@ -271,11 +268,10 @@
             document.getElementById('masterList').style.display = 'none';
         });
 
-        document.querySelectorAll('.filter-buttons button').forEach(button => {
-            button.addEventListener('click', () => {
-                const filter = button.getAttribute('data-filter');
-                filterProfiles(filter);
-            });
+        document.getElementById('search').addEventListener('input', () => {
+            const searchValue = document.getElementById('search').value;
+            const filteredUsers = filterByProfession(searchValue);
+            renderProfiles(filteredUsers);
         });
 
         function showForm() {
@@ -354,21 +350,6 @@
             });
         }
 
-        function filterProfiles(filter) {
-            const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Simulate multiple user data
-            const filteredUsers = filter === 'all' ? allUserData : allUserData.filter(user => user.profession === filter);
-            renderProfiles(filteredUsers);
-        }
-    </script>
-    <script>
-        // Обработчик события ввода в строку поиска
-        document.getElementById('search').addEventListener('input', () => {
-            const searchValue = document.getElementById('search').value;
-            const filteredUsers = filterByProfession(searchValue);
-            renderProfiles(filteredUsers);
-        });
-
-        // Функция фильтрации пользователей по профессии
         function filterByProfession(profession) {
             const allUserData = [JSON.parse(localStorage.getItem('userData'))]; // Здесь должны быть все данные пользователей
             if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
@@ -377,3 +358,4 @@
     </script>
 </body>
 </html>
+
