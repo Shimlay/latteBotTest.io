@@ -188,6 +188,8 @@
                     const about = document.getElementById("about").value;
                     const photo = document.getElementById("photo").files[0];
                     const userId = tg.initDataUnsafe.user.id; // Получение id пользователя
+                    const username = tg.initDataUnsafe.user.username; // Получение username пользователя
+                    const telegramUrl = `https://t.me/${username}`;
 
                     if (photo) {
                         const reader = new FileReader();
@@ -198,7 +200,8 @@
                                 fio: fio,
                                 profession: profession,
                                 about: about,
-                                photo_url: photo_url
+                                photo_url: photo_url,
+                                telegram_url: telegramUrl
                             };
 
                             // Save data to localStorage
@@ -217,7 +220,8 @@
                             fio: fio,
                             profession: profession,
                             about: about,
-                            photo_url: null
+                            photo_url: null,
+                            telegram_url: telegramUrl
                         };
 
                         // Save data to localStorage
@@ -307,19 +311,22 @@
                             fio: "Иванов Иван Иванович",
                             profession: "engineer",
                             about: "Опытный инженер с 10-летним стажем работы.",
-                            photo_url: "https://via.placeholder.com/150"
+                            photo_url: "https://via.placeholder.com/150",
+                            telegram_url: "https://t.me/example1"
                         },
                         {
                             fio: "Петров Петр Петрович",
                             profession: "teacher",
                             about: "Учитель математики в средней школе.",
-                            photo_url: "https://via.placeholder.com/150"
+                            photo_url: "https://via.placeholder.com/150",
+                            telegram_url: "https://t.me/example2"
                         },
                         {
                             fio: "Сидоров Сидор Сидорович",
                             profession: "doctor",
                             about: "Врач общей практики.",
-                            photo_url: "https://via.placeholder.com/150"
+                            photo_url: "https://via.placeholder.com/150",
+                            telegram_url: "https://t.me/example3"
                         }
                     ]; // Симуляция данных нескольких пользователей
                     renderProfiles(allUserData);
@@ -352,6 +359,12 @@
                                 userProfile.appendChild(userPhoto);
                             }
 
+                            const contactButton = document.createElement('a');
+                            contactButton.href = user.telegram_url;
+                            contactButton.innerText = 'Связаться';
+                            contactButton.classList.add('button');
+                            userProfile.appendChild(contactButton);
+
                             masterProfiles.appendChild(userProfile);
                         }
                     });
@@ -364,33 +377,34 @@
                         {
                             fio: "Иванов Иван Иванович",
                             profession: "engineer",
-                            about: "Опытный инженер с 10-летним стажем работы.",
-                            photo_url: "https://via.placeholder.com/150"
+                            about: "Чиню.",
+                            photo_url: "https://via.placeholder.com/150",
+                            telegram_url: "https://t.me/example1"
                         },
                         {
                             fio: "Петров Петр Петрович",
                             profession: "teacher",
-                            about: "Учитель математики в средней школе.",
-                            photo_url: "https://via.placeholder.com/150"
+                            about: "Учу",
+                            photo_url: "https://via.placeholder.com/150",
+                            telegram_url: "https://t.me/example2"
                         },
                         {
                             fio: "Сидоров Сидор Сидорович",
                             profession: "doctor",
-                            about: "Врач общей практики.",
-                            photo_url: "https://via.placeholder.com/150"
+                            about: "Лечу",
+                            photo_url: "https://via.placeholder.com/150",
+                            telegram_url: "https://t.me/example3"
                         }
-                    ]; // Здесь должны быть все данные пользователей
+                    ]; 
                     if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
                     return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
                 }
 
-                // Telegram WebApp BackButton
                 tg.BackButton.show();
                 tg.BackButton.onClick(() => {
                     tg.close();
                 });
 
-                // Telegram WebApp SettingsButton
                 tg.SettingsButton.show();
                 tg.SettingsButton.onClick(() => {
                     const disableNotifications = confirm("Вы хотите отключить уведомления?");
