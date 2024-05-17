@@ -191,6 +191,8 @@
                     const username = tg.initDataUnsafe.user.username; // Получение username пользователя
                     const telegramUrl = `https://t.me/${username}`;
 
+                    console.log('Submitting form data:', { fio, profession, about, photo, userId, telegramUrl });
+
                     try {
                         let photo_url = '';
 
@@ -198,6 +200,7 @@
                             const reader = new FileReader();
                             reader.onloadend = async () => {
                                 photo_url = reader.result;
+                                console.log('Photo URL generated:', photo_url);
                                 await saveProfile({ userId, fio, profession, about, photo_url, telegramUrl });
                             };
                             reader.readAsDataURL(photo);
@@ -210,26 +213,36 @@
                     }
                 });
 
-                async function saveProfile(profile) {
-                    try {
+                function saveProfile(profile) {
+                    tg.CloudStorage.getItem('userProfiles', (error, storedProfiles) => {
+                        if (error) {
+                            console.error('Ошибка при получении данных из Cloud Storage:', error);
+                            return;
+                        }
+
                         let profiles = [];
-                        const storedProfiles = await tg.CloudStorage.get('userProfiles');
                         if (storedProfiles) {
                             profiles = JSON.parse(storedProfiles);
                         }
+
                         const existingProfileIndex = profiles.findIndex(p => p.userId === profile.userId);
                         if (existingProfileIndex > -1) {
                             profiles[existingProfileIndex] = profile;
                         } else {
                             profiles.push(profile);
                         }
-                        await tg.CloudStorage.set('userProfiles', JSON.stringify(profiles));
-                        alert('Данные успешно сохранены');
-                        showMain();
-                    } catch (error) {
-                        console.error('Ошибка при сохранении данных в Cloud Storage:', error);
-                        alert('Ошибка при сохранении данных. Пожалуйста, попробуйте снова.');
-                    }
+
+                        tg.CloudStorage.setItem('userProfiles', JSON.stringify(profiles), (error, success) => {
+                            if (error) {
+                                console.error('Ошибка при сохранении данных в Cloud Storage:', error);
+                                alert('Ошибка при сохранении данных. Пожалуйста, попробуйте снова.');
+                                return;
+                            }
+                            console.log('Profile saved successfully:', success);
+                            alert('Профиль успешно сохранен!');
+                            showProfile(profile);
+                        });
+                    });
                 }
 
                 document.getElementById('editButton').addEventListener('click', () => {
@@ -267,7 +280,11 @@
 
                     const userId = tg.initDataUnsafe.user.id;
 
-                    tg.CloudStorage.get('userProfiles').then((data) => {
+                    tg.CloudStorage.getItem('userProfiles', (error, data) => {
+                        if (error) {
+                            console.error('Ошибка при получении данных из Cloud Storage:', error);
+                            return;
+                        }
                         if (data) {
                             const profiles = JSON.parse(data);
                             const userData = profiles.find(p => p.userId === userId);
@@ -279,8 +296,6 @@
                                 document.getElementById("photoPreview").style.display = userData.photo_url ? 'block' : 'none';
                             }
                         }
-                    }).catch((error) => {
-                        console.error('Ошибка при получении данных из Cloud Storage:', error);
                     });
                 }
 
@@ -297,22 +312,23 @@
                     document.getElementById("profilePhoto").style.display = data.photo_url ? 'block' : 'none';
                 }
 
-                async function showMasterList() {
+                function showMasterList() {
                     $("#main").hide();
                     $("#form").hide();
                     $("#profile").hide();
                     $("#masterList").show();
 
-                    try {
-                        const data = await tg.CloudStorage.get('userProfiles');
+                    tg.CloudStorage.getItem('userProfiles', (error, data) => {
+                        if (error) {
+                            console.error('Ошибка при получении списка мастеров:', error);
+                            alert('Ошибка при получении списка мастеров. Пожалуйста, попробуйте снова.');
+                            return;
+                        }
                         if (data) {
                             const masterProfiles = JSON.parse(data);
                             renderMasterProfiles(masterProfiles);
                         }
-                    } catch (error) {
-                        console.error('Ошибка при получении списка мастеров:', error);
-                        alert('Ошибка при получении списка мастеров. Пожалуйста, попробуйте снова.');
-                    }
+                    });
                 }
 
                 function renderMasterProfiles(profiles) {
