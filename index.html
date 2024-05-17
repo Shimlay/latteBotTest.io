@@ -1,360 +1,111 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль пользователя</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1, h2, h3 {
-            color: #f48024;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 12px 24px;
-            margin: 10px 0;
-            background-color: #f48024;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            font-size: 16px;
-            font-weight: 600;
-            text-transform: uppercase;
-            text-decoration: none;
-        }
-
-        .button:hover {
-            background-color: #d4671c;
-            transform: translateY(-2px);
-        }
-
-        .input-group {
-            margin: 20px 0;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        .input-group input, .input-group select, .input-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-top: 5px;
-        }
-
-        #photoPreview {
-            display: block;
-            max-width: 150px;
-            margin-top: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-profile {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-profile img {
-            max-width: 150px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        #main, #form, #profile, #masterList {
-            display: none;
-        }
-    </style>
+    <title>Profile Management</title>
 </head>
 <body>
-    <div class="container">
-        <div id="main">
-            <h1>Добро пожаловать</h1>
-            <button id="editButton" class="button">Редактировать профиль</button>
-            <button id="masters" class="button">Просмотреть всех мастеров</button>
-        </div>
+    <h1>Управление профилем</h1>
+    <form id="profileForm">
+        <label for="fio">ФИО:</label>
+        <input type="text" id="fio" name="fio" required><br>
 
-        <div id="form">
-            <h2>Редактировать профиль</h2>
-            <form id="customerForm">
-                <div class="input-group">
-                    <label for="fio">ФИО</label>
-                    <input type="text" id="fio" name="fio" required>
-                </div>
-                <div class="input-group">
-                    <label for="profession">Профессия</label>
-                    <select id="profession" name="profession" required>
-                        <option value="engineer">Инженер</option>
-                        <option value="teacher">Учитель</option>
-                        <option value="doctor">Врач</option>
-                        <!-- Добавьте дополнительные опции при необходимости -->
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label for="about">О себе</label>
-                    <textarea id="about" name="about" rows="4" required></textarea>
-                </div>
-                <div class="input-group">
-                    <label for="photo">Фото</label>
-                    <input type="file" id="photo" name="photo" accept="image/*">
-                    <img id="photoPreview" src="" alt="Фото пользователя">
-                </div>
-                <button type="submit" class="button">Сохранить</button>
-            </form>
-            <button id="backButton" class="button">Назад</button>
-        </div>
+        <label for="profession">Профессия:</label>
+        <input type="text" id="profession" name="profession" required><br>
 
-        <div id="profile">
-            <h2>Профиль пользователя</h2>
-            <p><strong>ФИО:</strong> <span id="profileFio"></span></p>
-            <p><strong>Профессия:</strong> <span id="profileProfession"></span></p>
-            <p><strong>О себе:</strong> <span id="profileAbout"></span></p>
-            <img id="profilePhoto" src="" alt="Фото пользователя">
-            <button id="backButtonProfile" class="button">Назад</button>
-        </div>
+        <label for="about">О себе:</label>
+        <textarea id="about" name="about" required></textarea><br>
 
-        <div id="masterList">
-            <h2>Все мастера</h2>
-            <input type="text" id="search" placeholder="Поиск по профессии">
-            <div id="masterProfiles"></div>
-            <button id="backToMain" class="button">Назад</button>
-        </div>
-    </div>
+        <label for="photo_url">URL фото:</label>
+        <input type="url" id="photo_url" name="photo_url" required><br>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+        <button type="button" id="saveProfileButton">Сохранить профиль</button>
+    </form>
+
+    <h2>Список всех анкет</h2>
+    <div id="profileList"></div>
+
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                let tg = window.Telegram.WebApp;
-                tg.expand();
+        // Инициализация Telegram Web App SDK
+        const tg = window.Telegram.WebApp;
 
-                // Инициализация Select2 для выпадающего списка профессий
-                $("#profession").select2({
-                    placeholder: "Выберите профессию",
-                    language: {
-                        noResults: function() {
-                            return "Результаты не найдены";
-                        }
-                    }
-                });
+        // Функция сохранения профиля
+        function saveProfile(profile) {
+            tg.CloudStorage.getItem('userProfiles', (error, storedProfiles) => {
+                if (error) {
+                    console.error('Ошибка при получении данных из Cloud Storage:', error);
+                    return;
+                }
 
-                const professionTranslations = {
-                    engineer: "Инженер",
-                    teacher: "Учитель",
-                    doctor: "Врач"
-                    // Добавьте сюда переводы для других профессий при необходимости
-                };
+                let profiles = [];
+                if (storedProfiles) {
+                    profiles = JSON.parse(storedProfiles);
+                }
 
-                const customerForm = document.getElementById("customerForm");
+                const existingProfileIndex = profiles.findIndex(p => p.userId === profile.userId);
+                if (existingProfileIndex > -1) {
+                    profiles[existingProfileIndex] = profile;
+                } else {
+                    profiles.push(profile);
+                }
 
-                customerForm.addEventListener("submit", async (e) => {
-                    e.preventDefault();
-
-                    const fio = document.getElementById("fio").value;
-                    const profession = document.getElementById("profession").value;
-                    const about = document.getElementById("about").value;
-                    const photo = document.getElementById("photo").files[0];
-                    const userId = tg.initDataUnsafe.user.id; // Получение id пользователя
-                    const username = tg.initDataUnsafe.user.username; // Получение username пользователя
-                    const telegramUrl = `https://t.me/${username}`;
-
-                    console.log('Submitting form data:', { fio, profession, about, photo, userId, telegramUrl });
-
-                    try {
-                        let photo_url = '';
-
-                        if (photo) {
-                            const reader = new FileReader();
-                            reader.onloadend = async () => {
-                                photo_url = reader.result;
-                                console.log('Photo URL generated:', photo_url);
-                                await saveProfile({ userId, fio, profession, about, photo_url, telegramUrl });
-                            };
-                            reader.readAsDataURL(photo);
-                        } else {
-                            await saveProfile({ userId, fio, profession, about, photo_url, telegramUrl });
-                        }
-                    } catch (error) {
-                        console.error('Ошибка при сохранении данных:', error);
+                tg.CloudStorage.setItem('userProfiles', JSON.stringify(profiles), (error, success) => {
+                    if (error) {
+                        console.error('Ошибка при сохранении данных в Cloud Storage:', error);
                         alert('Ошибка при сохранении данных. Пожалуйста, попробуйте снова.');
+                        return;
                     }
+                    console.log('Profile saved successfully:', success);
+                    alert('Профиль успешно сохранен!');
+                    showAllProfiles();  // Обновить список анкет после сохранения
                 });
+            });
+        }
 
-                function saveProfile(profile) {
-                    tg.CloudStorage.getItem('userProfiles', (error, storedProfiles) => {
-                        if (error) {
-                            console.error('Ошибка при получении данных из Cloud Storage:', error);
-                            return;
-                        }
-
-                        let profiles = [];
-                        if (storedProfiles) {
-                            profiles = JSON.parse(storedProfiles);
-                        }
-
-                        const existingProfileIndex = profiles.findIndex(p => p.userId === profile.userId);
-                        if (existingProfileIndex > -1) {
-                            profiles[existingProfileIndex] = profile;
-                        } else {
-                            profiles.push(profile);
-                        }
-
-                        tg.CloudStorage.setItem('userProfiles', JSON.stringify(profiles), (error, success) => {
-                            if (error) {
-                                console.error('Ошибка при сохранении данных в Cloud Storage:', error);
-                                alert('Ошибка при сохранении данных. Пожалуйста, попробуйте снова.');
-                                return;
-                            }
-                            console.log('Profile saved successfully:', success);
-                            alert('Профиль успешно сохранен!');
-                            showProfile(profile);
-                        });
-                    });
+        // Функция отображения всех анкет
+        function showAllProfiles() {
+            tg.CloudStorage.getItem('userProfiles', (error, data) => {
+                if (error) {
+                    console.error('Ошибка при получении данных из Cloud Storage:', error);
+                    return;
                 }
-
-                document.getElementById('editButton').addEventListener('click', () => {
-                    showForm();
-                });
-
-                document.getElementById('masters').addEventListener('click', () => {
-                    showMasterList();
-                });
-
-                document.getElementById('backButton').addEventListener('click', () => {
-                    showMain();
-                });
-
-                document.getElementById('backButtonProfile').addEventListener('click', () => {
-                    showMain();
-                });
-
-                document.getElementById('backToMain').addEventListener('click', () => {
-                    showMain();
-                });
-
-                function showMain() {
-                    $("#main").show();
-                    $("#form").hide();
-                    $("#profile").hide();
-                    $("#masterList").hide();
-                }
-
-                function showForm() {
-                    $("#main").hide();
-                    $("#form").show();
-                    $("#profile").hide();
-                    $("#masterList").hide();
-
-                    const userId = tg.initDataUnsafe.user.id;
-
-                    tg.CloudStorage.getItem('userProfiles', (error, data) => {
-                        if (error) {
-                            console.error('Ошибка при получении данных из Cloud Storage:', error);
-                            return;
-                        }
-                        if (data) {
-                            const profiles = JSON.parse(data);
-                            const userData = profiles.find(p => p.userId === userId);
-                            if (userData) {
-                                document.getElementById("fio").value = userData.fio || '';
-                                document.getElementById("profession").value = userData.profession || '';
-                                document.getElementById("about").value = userData.about || '';
-                                document.getElementById("photoPreview").src = userData.photo_url || '';
-                                document.getElementById("photoPreview").style.display = userData.photo_url ? 'block' : 'none';
-                            }
-                        }
-                    });
-                }
-
-                function showProfile(data) {
-                    $("#main").hide();
-                    $("#form").hide();
-                    $("#profile").show();
-                    $("#masterList").hide();
-
-                    document.getElementById("profileFio").textContent = data.fio;
-                    document.getElementById("profileProfession").textContent = professionTranslations[data.profession];
-                    document.getElementById("profileAbout").textContent = data.about;
-                    document.getElementById("profilePhoto").src = data.photo_url || '';
-                    document.getElementById("profilePhoto").style.display = data.photo_url ? 'block' : 'none';
-                }
-
-                function showMasterList() {
-                    $("#main").hide();
-                    $("#form").hide();
-                    $("#profile").hide();
-                    $("#masterList").show();
-
-                    tg.CloudStorage.getItem('userProfiles', (error, data) => {
-                        if (error) {
-                            console.error('Ошибка при получении списка мастеров:', error);
-                            alert('Ошибка при получении списка мастеров. Пожалуйста, попробуйте снова.');
-                            return;
-                        }
-                        if (data) {
-                            const masterProfiles = JSON.parse(data);
-                            renderMasterProfiles(masterProfiles);
-                        }
-                    });
-                }
-
-                function renderMasterProfiles(profiles) {
-                    const masterProfilesDiv = document.getElementById("masterProfiles");
-                    masterProfilesDiv.innerHTML = '';
-
+                if (data) {
+                    const profiles = JSON.parse(data);
+                    let profileListHtml = '<ul>';
                     profiles.forEach(profile => {
-                        const profileDiv = document.createElement("div");
-                        profileDiv.className = 'user-profile';
-                        profileDiv.innerHTML = `
-                            <img src="${profile.photo_url}" alt="Фото пользователя">
-                            <p><strong>ФИО:</strong> ${profile.fio}</p>
-                            <p><strong>Профессия:</strong> ${professionTranslations[profile.profession]}</p>
-                            <p><strong>О себе:</strong> ${profile.about}</p>
-                            <a href="${profile.telegram_url}" class="button">Написать в Telegram</a>
+                        profileListHtml += `
+                            <li>
+                                <strong>${profile.fio}</strong><br>
+                                Профессия: ${profile.profession}<br>
+                                О себе: ${profile.about}<br>
+                                <img src="${profile.photo_url}" alt="${profile.fio}" style="max-width: 100px; max-height: 100px;"><br>
+                            </li>
                         `;
-                        masterProfilesDiv.appendChild(profileDiv);
                     });
+                    profileListHtml += '</ul>';
+                    document.getElementById("profileList").innerHTML = profileListHtml;
+                } else {
+                    document.getElementById("profileList").innerText = 'Нет анкет для отображения.';
                 }
+            });
+        }
 
-                // Initial load
-                showMain();
-            } else {
-                alert("Telegram Web App SDK не загружен");
-            }
+        // Обработчик кнопки сохранения профиля
+        document.getElementById("saveProfileButton").addEventListener("click", () => {
+            const profile = {
+                userId: tg.initDataUnsafe.user.id,  // Уникальный идентификатор пользователя Telegram
+                fio: document.getElementById("fio").value,
+                profession: document.getElementById("profession").value,
+                about: document.getElementById("about").value,
+                photo_url: document.getElementById("photo_url").value
+            };
+            saveProfile(profile);
         });
+
+        // Вызов функции для отображения всех профилей при загрузке страницы
+        showAllProfiles();
     </script>
 </body>
 </html>
