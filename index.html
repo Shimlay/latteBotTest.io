@@ -26,7 +26,7 @@
     <h2>Список всех анкет</h2>
     <div id="profileList"></div>
 
-    <script src="https://telegram.org/js/telegram-web-app.js?21"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?21"></script> <!-- Подключение последней версии SDK -->
     <script>
         const tg = window.Telegram.WebApp;
 
@@ -86,6 +86,11 @@
                     const allProfiles = JSON.parse(data);
                     let profileListHtml = '<ul>';
 
+                    let pendingProfiles = allProfiles.length;
+                    if (pendingProfiles === 0) {
+                        document.getElementById("profileList").innerText = 'Нет анкет для отображения.';
+                    }
+
                     allProfiles.forEach(profileKey => {
                         tg.CloudStorage.getItem(profileKey, (error, profileData) => {
                             if (error) {
@@ -103,6 +108,10 @@
                                         <img src="${profile.photo_url}" alt="${profile.fio}" style="max-width: 100px; max-height: 100px;"><br>
                                     </li>
                                 `;
+                            }
+
+                            pendingProfiles--;
+                            if (pendingProfiles === 0) {
                                 document.getElementById("profileList").innerHTML = profileListHtml + '</ul>';
                             }
                         });
