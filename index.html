@@ -191,10 +191,28 @@
                     const username = tg.initDataUnsafe.user.username; // Получение username пользователя
                     const telegramUrl = `https://t.me/${username}`;
 
-                    if (photo) {
-                        const reader = new FileReader();
-                        reader.onloadend = async () => {
-                            const photo_url = reader.result;
+                    try {
+                        let photo_url = '';
+
+                        if (photo) {
+                            const reader = new FileReader();
+                            reader.onloadend = async () => {
+                                photo_url = reader.result;
+                                const data = {
+                                    user_id: userId,
+                                    fio: fio,
+                                    profession: profession,
+                                    about: about,
+                                    photo_url: photo_url,
+                                    telegram_url: telegramUrl
+                                };
+
+                                await tg.CloudStorage.put(`userData_${userId}`, JSON.stringify(data));
+                                alert('Данные успешно сохранены!');
+                                showProfile(data);
+                            };
+                            reader.readAsDataURL(photo);
+                        } else {
                             const data = {
                                 user_id: userId,
                                 fio: fio,
@@ -204,31 +222,13 @@
                                 telegram_url: telegramUrl
                             };
 
-                            // Save data to Cloud Storage
                             await tg.CloudStorage.put(`userData_${userId}`, JSON.stringify(data));
-
-                            document.getElementById("photoPreview").src = photo_url;
-                            document.getElementById("photoPreview").style.display = 'block';
-
                             alert('Данные успешно сохранены!');
                             showProfile(data);
-                        };
-                        reader.readAsDataURL(photo);
-                    } else {
-                        const data = {
-                            user_id: userId,
-                            fio: fio,
-                            profession: profession,
-                            about: about,
-                            photo_url: null,
-                            telegram_url: telegramUrl
-                        };
-
-                        // Save data to Cloud Storage
-                        await tg.CloudStorage.put(`userData_${userId}`, JSON.stringify(data));
-
-                        alert('Данные успешно сохранены!');
-                        showProfile(data);
+                        }
+                    } catch (error) {
+                        console.error('Ошибка при сохранении данных:', error);
+                        alert('Ошибка при сохранении данных. Пожалуйста, попробуйте снова.');
                     }
                 });
 
@@ -277,6 +277,8 @@
                             document.getElementById("photoPreview").src = userData.photo_url || '';
                             document.getElementById("photoPreview").style.display = userData.photo_url ? 'block' : 'none';
                         }
+                    }).catch((error) => {
+                        console.error('Ошибка при получении данных из Cloud Storage:', error);
                     });
                 }
 
@@ -299,18 +301,23 @@
                     $("#profile").hide();
                     $("#masterList").show();
 
-                    const allKeys = await tg.CloudStorage.keys();
-                    const masterProfiles = [];
+                    try {
+                        const allKeys = await tg.CloudStorage.keys();
+                        const masterProfiles = [];
 
-                    for (let key of allKeys) {
-                        if (key.startsWith('userData_')) {
-                            const data = await tg.CloudStorage.get(key);
-                            const userData = JSON.parse(data);
-                            masterProfiles.push(userData);
+                        for (let key of allKeys) {
+                            if (key.startsWith('userData_')) {
+                                const data = await tg.CloudStorage.get(key);
+                                const userData = JSON.parse(data);
+                                masterProfiles.push(userData);
+                            }
                         }
-                    }
 
-                    renderMasterProfiles(masterProfiles);
+                        renderMasterProfiles(masterProfiles);
+                    } catch (error) {
+                        console.error('Ошибка при получении списка мастеров:', error);
+                        alert('Ошибка при получении списка мастеров. Пожалуйста, попробуйте снова.');
+                    }
                 }
 
                 function renderMasterProfiles(profiles) {
