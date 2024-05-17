@@ -28,64 +28,86 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Инициализация Telegram Web App SDK
         const tg = window.Telegram.WebApp;
 
         // Функция сохранения профиля
         function saveProfile(profile) {
-            tg.CloudStorage.getItem('userProfiles', (error, storedProfiles) => {
+            const userKey = `profile_${tg.initDataUnsafe.user.id}`;
+            const allProfilesKey = 'allProfiles';
+
+            tg.CloudStorage.setItem(userKey, JSON.stringify(profile), (error, success) => {
                 if (error) {
-                    console.error('Ошибка при получении данных из Cloud Storage:', error);
+                    console.error('Ошибка при сохранении профиля:', error);
+                    alert('Ошибка при сохранении данных. Пожалуйста, попробуйте снова.');
                     return;
                 }
+                console.log('Профиль успешно сохранен:', success);
 
-                let profiles = [];
-                if (storedProfiles) {
-                    profiles = JSON.parse(storedProfiles);
-                }
-
-                const existingProfileIndex = profiles.findIndex(p => p.userId === profile.userId);
-                if (existingProfileIndex > -1) {
-                    profiles[existingProfileIndex] = profile;
-                } else {
-                    profiles.push(profile);
-                }
-
-                tg.CloudStorage.setItem('userProfiles', JSON.stringify(profiles), (error, success) => {
+                // Добавляем профиль в общий список профилей
+                tg.CloudStorage.getItem(allProfilesKey, (error, data) => {
                     if (error) {
-                        console.error('Ошибка при сохранении данных в Cloud Storage:', error);
-                        alert('Ошибка при сохранении данных. Пожалуйста, попробуйте снова.');
+                        console.error('Ошибка при получении списка профилей:', error);
                         return;
                     }
-                    console.log('Profile saved successfully:', success);
-                    alert('Профиль успешно сохранен!');
-                    showAllProfiles();  // Обновить список анкет после сохранения
+
+                    let allProfiles = [];
+                    if (data) {
+                        allProfiles = JSON.parse(data);
+                    }
+
+                    if (!allProfiles.includes(userKey)) {
+                        allProfiles.push(userKey);
+                    }
+
+                    tg.CloudStorage.setItem(allProfilesKey, JSON.stringify(allProfiles), (error, success) => {
+                        if (error) {
+                            console.error('Ошибка при обновлении списка профилей:', error);
+                            return;
+                        }
+                        console.log('Список профилей успешно обновлен:', success);
+                        alert('Профиль успешно сохранен!');
+                        showAllProfiles();
+                    });
                 });
             });
         }
 
         // Функция отображения всех анкет
         function showAllProfiles() {
-            tg.CloudStorage.getItem('userProfiles', (error, data) => {
+            const allProfilesKey = 'allProfiles';
+
+            tg.CloudStorage.getItem(allProfilesKey, (error, data) => {
                 if (error) {
-                    console.error('Ошибка при получении данных из Cloud Storage:', error);
+                    console.error('Ошибка при получении списка профилей:', error);
                     return;
                 }
+
                 if (data) {
-                    const profiles = JSON.parse(data);
+                    const allProfiles = JSON.parse(data);
                     let profileListHtml = '<ul>';
-                    profiles.forEach(profile => {
-                        profileListHtml += `
-                            <li>
-                                <strong>${profile.fio}</strong><br>
-                                Профессия: ${profile.profession}<br>
-                                О себе: ${profile.about}<br>
-                                <img src="${profile.photo_url}" alt="${profile.fio}" style="max-width: 100px; max-height: 100px;"><br>
-                            </li>
-                        `;
+
+                    allProfiles.forEach(profileKey => {
+                        tg.CloudStorage.getItem(profileKey, (error, profileData) => {
+                            if (error) {
+                                console.error(`Ошибка при получении профиля ${profileKey}:`, error);
+                                return;
+                            }
+
+                            if (profileData) {
+                                const profile = JSON.parse(profileData);
+                                profileListHtml += `
+                                    <li>
+                                        <strong>${profile.fio}</strong><br>
+                                        Профессия: ${profile.profession}<br>
+                                        О себе: ${profile.about}<br>
+                                        <img src="${profile.photo_url}" alt="${profile.fio}" style="max-width: 100px; max-height: 100px;"><br>
+                                    </li>
+                                `;
+                                document.getElementById("profileList").innerHTML = profileListHtml + '</ul>';
+                            }
+                        });
                     });
-                    profileListHtml += '</ul>';
-                    document.getElementById("profileList").innerHTML = profileListHtml;
+
                 } else {
                     document.getElementById("profileList").innerText = 'Нет анкет для отображения.';
                 }
@@ -95,7 +117,7 @@
         // Обработчик кнопки сохранения профиля
         document.getElementById("saveProfileButton").addEventListener("click", () => {
             const profile = {
-                userId: tg.initDataUnsafe.user.id,  // Уникальный идентификатор пользователя Telegram
+                userId: tg.initDataUnsafe.user.id,
                 fio: document.getElementById("fio").value,
                 profession: document.getElementById("profession").value,
                 about: document.getElementById("about").value,
