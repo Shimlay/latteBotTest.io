@@ -198,33 +198,11 @@
                             const reader = new FileReader();
                             reader.onloadend = async () => {
                                 photo_url = reader.result;
-                                const data = {
-                                    user_id: userId,
-                                    fio: fio,
-                                    profession: profession,
-                                    about: about,
-                                    photo_url: photo_url,
-                                    telegram_url: telegramUrl
-                                };
-
-                                await tg.CloudStorage.put(`userData_${userId}`, JSON.stringify(data));
-                                alert('Данные успешно сохранены!');
-                                showProfile(data);
+                                await saveProfile({ userId, fio, profession, about, photo_url, telegramUrl });
                             };
                             reader.readAsDataURL(photo);
                         } else {
-                            const data = {
-                                user_id: userId,
-                                fio: fio,
-                                profession: profession,
-                                about: about,
-                                photo_url: photo_url,
-                                telegram_url: telegramUrl
-                            };
-
-                            await tg.CloudStorage.put(`userData_${userId}`, JSON.stringify(data));
-                            alert('Данные успешно сохранены!');
-                            showProfile(data);
+                            await saveProfile({ userId, fio, profession, about, photo_url, telegramUrl });
                         }
                     } catch (error) {
                         console.error('Ошибка при сохранении данных:', error);
@@ -232,12 +210,34 @@
                     }
                 });
 
-                document.getElementById('masters').addEventListener("click", () => {
-                    showMasterList();
-                });
+                async function saveProfile(profile) {
+                    try {
+                        let profiles = [];
+                        const storedProfiles = await tg.CloudStorage.get('userProfiles');
+                        if (storedProfiles) {
+                            profiles = JSON.parse(storedProfiles);
+                        }
+                        const existingProfileIndex = profiles.findIndex(p => p.userId === profile.userId);
+                        if (existingProfileIndex > -1) {
+                            profiles[existingProfileIndex] = profile;
+                        } else {
+                            profiles.push(profile);
+                        }
+                        await tg.CloudStorage.set('userProfiles', JSON.stringify(profiles));
+                        alert('Данные успешно сохранены');
+                        showMain();
+                    } catch (error) {
+                        console.error('Ошибка при сохранении данных в Cloud Storage:', error);
+                        alert('Ошибка при сохранении данных. Пожалуйста, попробуйте снова.');
+                    }
+                }
 
                 document.getElementById('editButton').addEventListener('click', () => {
                     showForm();
+                });
+
+                document.getElementById('masters').addEventListener('click', () => {
+                    showMasterList();
                 });
 
                 document.getElementById('backButton').addEventListener('click', () => {
@@ -267,15 +267,17 @@
 
                     const userId = tg.initDataUnsafe.user.id;
 
-                    // Get user data from Cloud Storage
-                    tg.CloudStorage.get(`userData_${userId}`).then((data) => {
+                    tg.CloudStorage.get('userProfiles').then((data) => {
                         if (data) {
-                            const userData = JSON.parse(data);
-                            document.getElementById("fio").value = userData.fio || '';
-                            document.getElementById("profession").value = userData.profession || '';
-                            document.getElementById("about").value = userData.about || '';
-                            document.getElementById("photoPreview").src = userData.photo_url || '';
-                            document.getElementById("photoPreview").style.display = userData.photo_url ? 'block' : 'none';
+                            const profiles = JSON.parse(data);
+                            const userData = profiles.find(p => p.userId === userId);
+                            if (userData) {
+                                document.getElementById("fio").value = userData.fio || '';
+                                document.getElementById("profession").value = userData.profession || '';
+                                document.getElementById("about").value = userData.about || '';
+                                document.getElementById("photoPreview").src = userData.photo_url || '';
+                                document.getElementById("photoPreview").style.display = userData.photo_url ? 'block' : 'none';
+                            }
                         }
                     }).catch((error) => {
                         console.error('Ошибка при получении данных из Cloud Storage:', error);
@@ -302,18 +304,11 @@
                     $("#masterList").show();
 
                     try {
-                        const allKeys = await tg.CloudStorage.keys();
-                        const masterProfiles = [];
-
-                        for (let key of allKeys) {
-                            if (key.startsWith('userData_')) {
-                                const data = await tg.CloudStorage.get(key);
-                                const userData = JSON.parse(data);
-                                masterProfiles.push(userData);
-                            }
+                        const data = await tg.CloudStorage.get('userProfiles');
+                        if (data) {
+                            const masterProfiles = JSON.parse(data);
+                            renderMasterProfiles(masterProfiles);
                         }
-
-                        renderMasterProfiles(masterProfiles);
                     } catch (error) {
                         console.error('Ошибка при получении списка мастеров:', error);
                         alert('Ошибка при получении списка мастеров. Пожалуйста, попробуйте снова.');
