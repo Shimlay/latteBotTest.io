@@ -193,7 +193,7 @@
 
                     if (photo) {
                         const reader = new FileReader();
-                        reader.onloadend = () => {
+                        reader.onloadend = async () => {
                             const photo_url = reader.result;
                             const data = {
                                 user_id: userId,
@@ -204,8 +204,8 @@
                                 telegram_url: telegramUrl
                             };
 
-                            // Save data to localStorage
-                            localStorage.setItem('userData_' + userId, JSON.stringify(data));
+                            // Save data to Cloud Storage
+                            await tg.CloudStorage.put(`userData_${userId}`, JSON.stringify(data));
 
                             document.getElementById("photoPreview").src = photo_url;
                             document.getElementById("photoPreview").style.display = 'block';
@@ -224,8 +224,8 @@
                             telegram_url: telegramUrl
                         };
 
-                        // Save data to localStorage
-                        localStorage.setItem('userData_' + userId, JSON.stringify(data));
+                        // Save data to Cloud Storage
+                        await tg.CloudStorage.put(`userData_${userId}`, JSON.stringify(data));
 
                         alert('Данные успешно сохранены!');
                         showProfile(data);
@@ -241,198 +241,100 @@
                 });
 
                 document.getElementById('backButton').addEventListener('click', () => {
-                    document.getElementById('main').style.display = 'block';
-                    document.getElementById('form').style.display = 'none';
+                    showMain();
                 });
 
                 document.getElementById('backButtonProfile').addEventListener('click', () => {
-                    document.getElementById('main').style.display = 'block';
-                    document.getElementById('profile').style.display = 'none';
+                    showMain();
                 });
 
                 document.getElementById('backToMain').addEventListener('click', () => {
-                    document.getElementById('main').style.display = 'block';
-                    document.getElementById('masterList').style.display = 'none';
+                    showMain();
                 });
 
-                document.getElementById('search').addEventListener('input', () => {
-                    const searchValue = document.getElementById('search').value;
-                    const filteredUsers = filterByProfession(searchValue);
-                    renderProfiles(filteredUsers);
-                });
+                function showMain() {
+                    $("#main").show();
+                    $("#form").hide();
+                    $("#profile").hide();
+                    $("#masterList").hide();
+                }
 
                 function showForm() {
-                    document.getElementById('main').style.display = 'none';
-                    document.getElementById('profile').style.display = 'none';
-                    document.getElementById('form').style.display = 'block';
+                    $("#main").hide();
+                    $("#form").show();
+                    $("#profile").hide();
+                    $("#masterList").hide();
 
                     const userId = tg.initDataUnsafe.user.id;
-                    const userData = JSON.parse(localStorage.getItem('userData_' + userId));
-                    if (userData) {
-                        document.getElementById("fio").value = userData.fio || '';
-                        document.getElementById("profession").value = userData.profession || 'engineer';
-                        document.getElementById("about").value = userData.about || '';
-                        if (userData.photo_url) {
-                            document.getElementById("photoPreview").src = userData.photo_url;
-                            document.getElementById("photoPreview").style.display = 'block';
-                        }
-                    } else {
-                        document.getElementById("customerForm").reset();
-                        document.getElementById("photoPreview").style.display = 'none';
-                    }
-                }
 
-                function showProfile(userData) {
-                    document.getElementById('main').style.display = 'none';
-                    document.getElementById('form').style.display = 'none';
-                    document.getElementById('profile').style.display = 'block';
-
-                    document.getElementById("profileFio").innerText = userData.fio;
-                    document.getElementById("profileProfession").innerText = professionTranslations[userData.profession];
-                    document.getElementById("profileAbout").innerText = userData.about;
-                    if (userData.photo_url) {
-                        document.getElementById("profilePhoto").src = userData.photo_url;
-                        document.getElementById("profilePhoto").style.display = 'block';
-                    } else {
-                        document.getElementById("profilePhoto").style.display = 'none';
-                    }
-                }
-
-                function showMasterList() {
-                    document.getElementById('main').style.display = 'none';
-                    document.getElementById('form').style.display = 'none';
-                    document.getElementById('profile').style.display = 'none';
-                    document.getElementById('masterList').style.display = 'block';
-
-                    const userId = tg.initDataUnsafe.user.id;
-                    const allUserData = [
-                        JSON.parse(localStorage.getItem('userData_' + userId)),
-                        {
-                            fio: "Иванов Иван Иванович",
-                            profession: "engineer",
-                            about: "Опытный инженер с 10-летним стажем работы.",
-                            photo_url: "https://via.placeholder.com/150",
-                            telegram_url: "https://t.me/example1"
-                        },
-                        {
-                            fio: "Петров Петр Петрович",
-                            profession: "teacher",
-                            about: "Учитель математики в средней школе.",
-                            photo_url: "https://via.placeholder.com/150",
-                            telegram_url: "https://t.me/example2"
-                        },
-                        {
-                            fio: "Сидоров Сидор Сидорович",
-                            profession: "doctor",
-                            about: "Врач общей практики.",
-                            photo_url: "https://via.placeholder.com/150",
-                            telegram_url: "https://t.me/example3"
-                        },
-                        {
-                            fio: "Администратор",
-                            profession: "doctor",
-                            about: "Администрирую",
-                            photo_url: "https://via.placeholder.com/150",
-                            telegram_url: "https://t.me/Shimlay"
-                        }
-                    ]; // Симуляция данных нескольких пользователей
-                    renderProfiles(allUserData);
-                }
-
-                function renderProfiles(users) {
-                    const masterProfiles = document.getElementById('masterProfiles');
-                    masterProfiles.innerHTML = '';
-
-                    users.forEach(user => {
-                        if (user) {
-                            const userProfile = document.createElement('div');
-                            userProfile.classList.add('user-profile');
-
-                            const userFio = document.createElement('p');
-                            userFio.innerHTML = `<strong>ФИО:</strong> ${user.fio}`;
-                            userProfile.appendChild(userFio);
-
-                            const userProfession = document.createElement('p');
-                            userProfession.innerHTML = `<strong>Профессия:</strong> ${professionTranslations[user.profession]}`;
-                            userProfile.appendChild(userProfession);
-
-                            const userAbout = document.createElement('p');
-                            userAbout.innerHTML = `<strong>О себе:</strong> ${user.about}`;
-                            userProfile.appendChild(userAbout);
-
-                            if (user.photo_url) {
-                                const userPhoto = document.createElement('img');
-                                userPhoto.src = user.photo_url;
-                                userProfile.appendChild(userPhoto);
-                            }
-
-                            const contactButton = document.createElement('a');
-                            contactButton.href = user.telegram_url;
-                            contactButton.innerText = 'Связаться';
-                            contactButton.classList.add('button');
-                            userProfile.appendChild(contactButton);
-
-                            masterProfiles.appendChild(userProfile);
+                    // Get user data from Cloud Storage
+                    tg.CloudStorage.get(`userData_${userId}`).then((data) => {
+                        if (data) {
+                            const userData = JSON.parse(data);
+                            document.getElementById("fio").value = userData.fio || '';
+                            document.getElementById("profession").value = userData.profession || '';
+                            document.getElementById("about").value = userData.about || '';
+                            document.getElementById("photoPreview").src = userData.photo_url || '';
+                            document.getElementById("photoPreview").style.display = userData.photo_url ? 'block' : 'none';
                         }
                     });
                 }
 
-                function filterByProfession(profession) {
-                    const userId = tg.initDataUnsafe.user.id;
-                    const allUserData = [
-                        JSON.parse(localStorage.getItem('userData_' + userId)),
-                        {
-                            fio: "Иванов Иван Иванович",
-                            profession: "engineer",
-                            about: "Чиню.",
-                            photo_url: "https://via.placeholder.com/150",
-                            telegram_url: "https://t.me/example1"
-                        },
-                        {
-                            fio: "Петров Петр Петрович",
-                            profession: "teacher",
-                            about: "Учу",
-                            photo_url: "https://via.placeholder.com/150",
-                            telegram_url: "https://t.me/example2"
-                        },
-                        {
-                            fio: "Сидоров Сидор Сидорович",
-                            profession: "doctor",
-                            about: "Лечу",
-                            photo_url: "https://via.placeholder.com/150",
-                            telegram_url: "https://t.me/example3"
-                        },
-                        {
-                            fio: "Администратор",
-                            profession: "doctor",
-                            about: "Администрирую",
-                            photo_url: "https://shimlay.github.io/latteBotTest.io/photo_2023-12-14_03-46-44.jpg",
-                            telegram_url: "https://t.me/Shimlay"
-                        }
-                    ]; 
-                    if (!profession) return allUserData; // Возвращаем всех пользователей, если строка поиска пустая
-                    return allUserData.filter(user => professionTranslations[user.profession].toLowerCase().includes(profession.toLowerCase()));
+                function showProfile(data) {
+                    $("#main").hide();
+                    $("#form").hide();
+                    $("#profile").show();
+                    $("#masterList").hide();
+
+                    document.getElementById("profileFio").textContent = data.fio;
+                    document.getElementById("profileProfession").textContent = professionTranslations[data.profession];
+                    document.getElementById("profileAbout").textContent = data.about;
+                    document.getElementById("profilePhoto").src = data.photo_url || '';
+                    document.getElementById("profilePhoto").style.display = data.photo_url ? 'block' : 'none';
                 }
 
-                tg.BackButton.show();
-                tg.BackButton.onClick(() => {
-                    tg.close();
-                });
+                async function showMasterList() {
+                    $("#main").hide();
+                    $("#form").hide();
+                    $("#profile").hide();
+                    $("#masterList").show();
 
-                tg.SettingsButton.show();
-                tg.SettingsButton.onClick(() => {
-                    const disableNotifications = confirm("Вы хотите отключить уведомления?");
-                    if (disableNotifications) {
-                        localStorage.setItem('notificationsDisabled', 'true');
-                    } else {
-                        localStorage.setItem('notificationsDisabled', 'false');
+                    const allKeys = await tg.CloudStorage.keys();
+                    const masterProfiles = [];
+
+                    for (let key of allKeys) {
+                        if (key.startsWith('userData_')) {
+                            const data = await tg.CloudStorage.get(key);
+                            const userData = JSON.parse(data);
+                            masterProfiles.push(userData);
+                        }
                     }
-                });
 
-                // Инициализация
-                document.getElementById('main').style.display = 'block';
+                    renderMasterProfiles(masterProfiles);
+                }
+
+                function renderMasterProfiles(profiles) {
+                    const masterProfilesDiv = document.getElementById("masterProfiles");
+                    masterProfilesDiv.innerHTML = '';
+
+                    profiles.forEach(profile => {
+                        const profileDiv = document.createElement("div");
+                        profileDiv.className = 'user-profile';
+                        profileDiv.innerHTML = `
+                            <img src="${profile.photo_url}" alt="Фото пользователя">
+                            <p><strong>ФИО:</strong> ${profile.fio}</p>
+                            <p><strong>Профессия:</strong> ${professionTranslations[profile.profession]}</p>
+                            <p><strong>О себе:</strong> ${profile.about}</p>
+                            <a href="${profile.telegram_url}" class="button">Написать в Telegram</a>
+                        `;
+                        masterProfilesDiv.appendChild(profileDiv);
+                    });
+                }
+
+                // Initial load
+                showMain();
             } else {
-                console.error("Telegram WebApp not initialized");
+                alert("Telegram Web App SDK не загружен");
             }
         });
     </script>
